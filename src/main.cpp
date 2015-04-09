@@ -66,6 +66,8 @@ int main()
 	delete is;
 	delete ps1;
 	delete ps2;
+	delete ps3;
+	delete ps4;
 	delete rs;
 	delete sl;
 
