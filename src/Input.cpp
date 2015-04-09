@@ -30,7 +30,7 @@ int Input::stop()
 
 Item *Input::generate()
 {
-	usleep(16);
+	usleep(16000);
 	return new Item;
 }
 

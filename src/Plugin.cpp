@@ -6,6 +6,6 @@ Plugin::Plugin()
 
 int Plugin::process(Item * item)
 {
-	usleep(10);
+	usleep(10000);
 	return 0;
 }
