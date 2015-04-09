@@ -61,6 +61,7 @@ int main()
 
 	std::cout << "Input items:\t " << input->numItems << std::endl;
 	std::cout << "Process items:\t " << is->numItems << std::endl;
+	std::cout << "Loss:\t\t " << 100 - ((is->numItems*100.0)/input->numItems) << "%" << std::endl;
 	delete input;
 	delete is;
 	delete ps1;
