@@ -7,10 +7,11 @@
 #include "PluginStack.hpp"
 #include "RingStack.hpp"
 #include "Item.hpp"
+#include "Slicer.hpp"
 
 class ItemSwitch {
  public:
-	ItemSwitch(int numThreads, RingStack * rs);
+	ItemSwitch(int numThreads, int nparts, Slicer * s, RingStack * rs);
 	int addPluginStack(PluginStack * ps);
 	int run();
 	int stop();
@@ -18,7 +19,9 @@ class ItemSwitch {
 
  private:
 	int NTHREADS;
+	int NPARTS;
 	RingStack *ringStack;
+	Slicer *slicer;
 	 std::vector < PluginStack * >pluginStack;
 	int numPStaks;
 	volatile int running;

@@ -20,13 +20,13 @@ int main()
 	Plugin plugins[5];
 
 	rs = new RingStack(60);
-	is = new ItemSwitch(2, rs);
 	input = new Input(rs);
 	sl = new Slicer();
-	ps1 = new PluginStack(2, sl);
-	ps2 = new PluginStack(2, sl);
-	ps3 = new PluginStack(2, sl);
-	ps4 = new PluginStack(2, sl);
+	is = new ItemSwitch(4, 2, sl, rs);
+	ps1 = new PluginStack();
+	ps2 = new PluginStack();
+	ps3 = new PluginStack();
+	ps4 = new PluginStack();
 	for (i = 0; i < 5; i++) {
 		ps1->addPlugin(&plugins[i]);
 		ps2->addPlugin(&plugins[i]);
@@ -61,7 +61,8 @@ int main()
 
 	std::cout << "Input items:\t " << input->numItems << std::endl;
 	std::cout << "Process items:\t " << is->numItems << std::endl;
-	std::cout << "Loss:\t\t " << 100 - ((is->numItems*100.0)/input->numItems) << "%" << std::endl;
+	std::cout << "Loss:\t\t " << 100 -
+	    ((is->numItems * 100.0) / input->numItems) << "%" << std::endl;
 	delete input;
 	delete is;
 	delete ps1;
