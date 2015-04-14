@@ -5,6 +5,7 @@ class Item {
  public:
 	Item();
 	~Item();
+	double time;
 };
 
 #endif

@@ -37,6 +37,7 @@ int main()
 	is->addPluginStack(ps2);
 	is->addPluginStack(ps3);
 	is->addPluginStack(ps4);
+	is->setThreshold(0.06);
 
 #pragma omp parallel sections num_threads(3)
 	{
@@ -63,6 +64,8 @@ int main()
 	std::cout << "Process items:\t " << is->numItems << std::endl;
 	std::cout << "Loss:\t\t " << 100 -
 	    ((is->numItems * 100.0) / input->numItems) << "%" << std::endl;
+	std::cout << "Max Wait time:\t " << is->maxItemWait << std::endl;
+	std::cout << "Fresh Items:\t " << is->freshItems << std::endl;
 	delete input;
 	delete is;
 	delete ps1;

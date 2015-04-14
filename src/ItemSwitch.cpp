@@ -9,6 +9,9 @@ ItemSwitch::ItemSwitch(int numThreads, int nparts, Slicer * s, RingStack * rs)
 	running = 0;
 	numPStaks = 0;
 	numItems = 0;
+	maxThreshold = 0;
+	maxItemWait = 0;
+	freshItems = 0;
 	if (!omp_get_nested()) {
 		omp_set_nested(1);
 	}
@@ -29,6 +32,7 @@ int ItemSwitch::run()
 		Item *item;
 		Item **p;
 		int i, t;
+		double dtime;
 		while (running) {
 #pragma omp critical (RingStack)
 			{
@@ -45,9 +49,18 @@ int ItemSwitch::run()
 					}
 					delete p[t];
 				}
+#pragma omp critical
+				{
+					numItems++;
+					dtime = omp_get_wtime() - item->time;
+					if (dtime <= maxThreshold) {
+						freshItems++;
+					}
+					if (maxItemWait < dtime) {
+						maxItemWait = dtime;
+					}
+				}
 				delete item;
-#pragma omp atomic
-				numItems++;
 			}
 		}
 	}
@@ -57,5 +70,11 @@ int ItemSwitch::run()
 int ItemSwitch::stop()
 {
 	running = 0;
+	return 0;
+}
+
+int ItemSwitch::setThreshold(double t)
+{
+	maxThreshold = t;
 	return 0;
 }

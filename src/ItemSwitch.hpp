@@ -15,7 +15,12 @@ class ItemSwitch {
 	int addPluginStack(PluginStack * ps);
 	int run();
 	int stop();
+
+	/* Debug methods */
 	int numItems;
+	double maxItemWait;
+	int freshItems;
+	int setThreshold(double t);
 
  private:
 	int NTHREADS;
@@ -25,5 +30,8 @@ class ItemSwitch {
 	 std::vector < PluginStack * >pluginStack;
 	int numPStaks;
 	volatile int running;
+
+	/* Debug info */
+	double maxThreshold;
 };
 #endif
