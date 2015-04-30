@@ -30,7 +30,7 @@ int main()
 	PluginStack *ps1, *ps2;
 	RingStack *rs;
 	Slicer *sl;
-
+	
 	std::vector < sColor * >color;
 	sColor *c;
 	//Colors!!
@@ -162,6 +162,7 @@ int main()
 	c->hsv_max.value = 255;
 	color.push_back(c);
 
+
 	rs = new RingStack(60);
 	input = new CaptureFromFile(rs, "../robots.avi");
 	sl = new FrameSlicer();
@@ -178,6 +179,10 @@ int main()
 
 	ps2->addPlugin(new PluginCalibration());
 	ps2->addPlugin(new PluginColorConversions());
+	ps2->addPlugin(new PluginColorSegmentation(color));
+	ps2->addPlugin(new PluginMorphology());
+	ps2->addPlugin(new PluginFindBlobs());
+	ps2->addPlugin(new PluginFindSecondariesBlobs());
 	ps2->addPlugin(new PluginNetworking(1));
 
 	is->addPluginStack(ps1);

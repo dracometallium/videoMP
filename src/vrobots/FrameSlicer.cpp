@@ -1,6 +1,8 @@
 #include "FrameSlicer.hpp"
 #include <cmath>
 
+int FrameSlicer::BORDER = 50;
+
 FrameSlicer::FrameSlicer()
 {
 	oldNumParts = 0;

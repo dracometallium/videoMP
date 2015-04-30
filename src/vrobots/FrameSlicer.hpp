@@ -14,6 +14,6 @@ class FrameSlicer:public Slicer {
 	int oldNumParts;
 	int c, l;
 	int optimalSize(int imgH, int imgW, int parts);
-	int BORDER = 50;
+	static int BORDER;
 };
 #endif

@@ -7,12 +7,9 @@ class Frame:public Item {
  public:
 	Frame(IplImage * iframe);
 	~Frame();
-	static int setdata(std::vector < sData * >*ndata) {
-		cdata = ndata;
-		return 0;
-	};
 	IplImage *frame;
-	static std::vector < sData * >*cdata;
-	std::vector < sData * >*data;
+	static std::vector < sData * >bdata;
+	static int setInit(IplImage * img);
+	 std::vector < sData * >*data;
 };
 #endif

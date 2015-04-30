@@ -1,7 +1,8 @@
 NAME=videoMP
 
 LFLAGS=-fopenmp
-CFLAGS=-Wall -O3 -fopenmp -pipe
+CFLAGS=-Wall -g -fopenmp -pipe
+#CFLAGS=-Wall -O3 -fopenmp -pipe
 INCPATH=-I/usr/share/qt4/mkspecs/linux-g++-64 -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4 -I./src -I./src/vrobots  -I/usr/include/opencv2 -I/usr/include/opencv -I/usr/local/lib -I/usr/local/include
 LIBS=-lopencv_core -lopencv_imgproc -lopencv_calib3d -lopencv_video -lopencv_features2d -lopencv_ml -lopencv_highgui -lopencv_objdetect -lopencv_contrib -lopencv_legacy -lopencv_flann -lcvblob -lQtGui -lQtCore 
 DEBUG=

@@ -44,10 +44,31 @@ Item *CaptureFromFile::generate()
 {
 	// TODO: fps should be changeable to video reproduction speed
 	Frame *nframe;
-	usleep(1000000 / fps);
+	IplImage tIpl;
+	IplImage *ipl;
+
 	//cvCloneImage turns a Mat to a IplImage
 	capture >> tframe;	// get a new frame from camera.
-	nframe = new Frame(cvCloneImage(((IplImage *) & tframe)));
+
+	//ipl = cvCreateImage(cvSize(frame_height, frame_width), 8, 3);
+//      iplimage_from_cvmat(tframe, ipl);
+	tIpl = tframe;
+	ipl = cvCloneImage(&tIpl);
+
+	nframe = new Frame(ipl);
 
 	return nframe;
+}
+
+void CaptureFromFile::iplimage_from_cvmat(CvMat input, IplImage * output)
+{
+	int x, y;
+	for (x = 0; x < output->width; x++) {
+		for (y = 0; y < output->height; y++) {
+			// note: CvMat is indexed (row, column) but IplImage is indexed (x,y)
+			// so the indexes must be interchanged!
+			cvSetReal2D(output, x, y,
+				    CV_MAT_ELEM(input, uchar, y, x));
+		}
+	}
 }

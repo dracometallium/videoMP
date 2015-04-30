@@ -28,8 +28,6 @@
 
 class PluginDetectBalls: public Plugin {
 public:
-	PluginDetectBalls();
-	virtual ~PluginDetectBalls();
 
 	virtual int process(Item * item);
 
