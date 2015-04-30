@@ -36,80 +36,81 @@ PluginNetworking::PluginNetworking(int _n)
 	n = _n;
 }
 
-int PluginNetworking::process(Frame * frame)
+int PluginNetworking::process(Item * item)
 {
+	Frame *frame;
+	frame = (Frame *) item;
 	if (n == 1) {
 		for (unsigned int j = 0;
-		     j < frame->data[0]->blue_team->patches.size(); ++j) {
+		     j < (*frame->data)[0]->blue_team->patches.size(); ++j) {
 			int detected;
-			if (frame->data[0]->blue_team->patches[j]->detected)
+			if ((*frame->data)[0]->blue_team->patches[j]->detected)
 				detected = 1;
 			else
 				detected = 0;
 			qDebug() << QString::number(GetTimeSec(), 'f',
 						    6) << "seconds;" <<
 			    "Thread of Processing" << n << ";" << "#Frame" <<
-			    frame->data[0]->
-			    frameNumber << ";" << "Object" << frame->data[0]->
+			    (*frame->
+			     data)[0]->frameNumber << ";" << "Object" <<
+			    (*frame->data)[0]->blue_team->
+			    patches[j]->id << ";" << "Detected" << detected <<
+			    ";" << "pixel(" << (*frame->data)[0]->blue_team->
+			    patches[j]->center.x << "," << (*frame->data)[0]->
+			    blue_team->patches[j]->center.
+			    y << ");" << "pos(" << (*frame->data)[0]->
 			    blue_team->patches[j]->
-			    id << ";" << "Detected" << detected << ";" <<
-			    "pixel(" << frame->data[0]->blue_team->patches[j]->
-			    center.x << "," << frame->data[0]->blue_team->
-			    patches[j]->center.y << ");" << "pos(" << frame->
-			    data[0]->blue_team->patches[j]->field_pos.
-			    x << "," << frame->data[0]->blue_team->patches[j]->
-			    field_pos.
-			    y << ")mm;" << "orient(" << QString::number(frame->
-									data
-									[0]->
-									blue_team->
-									patches
-									[j]->
-									orientation,
-									'f',
-									2) <<
-			    ")rad;" << "orient(" << QString::
-			    number((frame->data[0]->blue_team->patches[j]->
-				    orientation * 180 / 3.1415), 'f',
-				   2) << ")grad;" << "team marker area" <<
-			    frame->data[0]->blue_team->patches[j]->teamMarker.
-			    area << "px;"
+			    field_pos.x << "," << (*frame->data)[0]->blue_team->
+			    patches[j]->field_pos.y << ")mm;" << "orient(" <<
+			    QString::number((*frame->data)
+					    [0]->blue_team->patches
+					    [j]->orientation, 'f',
+					    2) << ")rad;" << "orient(" <<
+			    QString::number(((*frame->data)[0]->blue_team->
+					     patches[j]->orientation * 180 /
+					     3.1415), 'f',
+					    2) << ")grad;" << "team marker area"
+			    << (*frame->data)[0]->blue_team->patches[j]->
+			    teamMarker.area << "px;"
 			    /* for general use of markers, enable the next "for" loop below and disable this seccion */
 			    << "secondary marker 0 center(" <<
-			    frame->data[0]->blue_team->patches[j]->markers[0]->
-			    center.x << "," << frame->data[0]->blue_team->
-			    patches[j]->markers[0]->center.
-			    y << ");" << "secondary marker 0 area" << frame->
-			    data[0]->blue_team->patches[j]->markers[0]->
-			    area << "px;" << "secondary marker 1 center(" <<
-			    frame->data[0]->blue_team->patches[j]->markers[1]->
-			    center.x << "," << frame->data[0]->blue_team->
-			    patches[j]->markers[1]->center.
-			    y << ")px;" << "secondary marker 1 area" << frame->
-			    data[0]->blue_team->patches[j]->markers[1]->
-			    area << "px;" << "secondary marker 2 center(" <<
-			    frame->data[0]->blue_team->patches[j]->markers[2]->
-			    center.x << "," << frame->data[0]->blue_team->
-			    patches[j]->markers[2]->center.
-			    y << ")px;" << "secondary marker 2 area" << frame->
-			    data[0]->blue_team->patches[j]->markers[2]->
-			    area << "px;" << "secondary marker 3 center(" <<
-			    frame->data[0]->blue_team->patches[j]->markers[3]->
-			    center.x << "," << frame->data[0]->blue_team->
-			    patches[j]->markers[3]->center.
-			    y << ")px;" << "secondary marker 3 area" << frame->
-			    data[0]->blue_team->patches[j]->markers[3]->
-			    area << "px";
+			    (*frame->data)[0]->blue_team->patches[j]->
+			    markers[0]->center.x << "," << (*frame->data)[0]->
+			    blue_team->patches[j]->markers[0]->
+			    center.y << ");" << "secondary marker 0 area" <<
+			    (*frame->data)[0]->blue_team->patches[j]->
+			    markers[0]->area << "px;" <<
+			    "secondary marker 1 center(" << (*frame->data)[0]->
+			    blue_team->patches[j]->markers[1]->center.
+			    x << "," << (*frame->data)[0]->
+			    blue_team->patches[j]->markers[1]->
+			    center.y << ")px;" << "secondary marker 1 area" <<
+			    (*frame->data)[0]->blue_team->patches[j]->
+			    markers[1]->area << "px;" <<
+			    "secondary marker 2 center(" << (*frame->data)[0]->
+			    blue_team->patches[j]->markers[2]->center.
+			    x << "," << (*frame->data)[0]->
+			    blue_team->patches[j]->markers[2]->
+			    center.y << ")px;" << "secondary marker 2 area" <<
+			    (*frame->data)[0]->blue_team->patches[j]->
+			    markers[2]->area << "px;" <<
+			    "secondary marker 3 center(" << (*frame->data)[0]->
+			    blue_team->patches[j]->markers[3]->center.
+			    x << "," << (*frame->data)[0]->
+			    blue_team->patches[j]->markers[3]->
+			    center.y << ")px;" << "secondary marker 3 area" <<
+			    (*frame->data)[0]->blue_team->patches[j]->
+			    markers[3]->area << "px";
 		}
 	} else if (n == 2)
 		qDebug() << QString::number(GetTimeSec(), 'f', 6) << "seconds;"
 		    << "Thread of Processing" << n << ";"
-		    << "#Frame" << frame->data[0]->frameNumber << ";"
+		    << "#Frame" << (*frame->data)[0]->frameNumber << ";"
 		    << "Object Ball;"
-		    << "pixel(" << frame->data[0]->ball->center.x << ","
-		    << frame->data[0]->ball->center.y << ");"
-		    << "pos(" << frame->data[0]->ball->field_pos.x << ","
-		    << frame->data[0]->ball->field_pos.y << ")mm";
+		    << "pixel(" << (*frame->data)[0]->ball->center.x << ","
+		    << (*frame->data)[0]->ball->center.y << ");"
+		    << "pos(" << (*frame->data)[0]->ball->field_pos.x << ","
+		    << (*frame->data)[0]->ball->field_pos.y << ")mm";
 
 	return 0;
 }

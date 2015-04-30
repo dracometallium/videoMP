@@ -27,9 +27,10 @@
 #include <sstream>
 #include <string>
 
-
-PluginFindSecondariesBlobs::PluginFindSecondariesBlobs() {
-	cvInitFont(&font,CV_FONT_HERSHEY_SIMPLEX|CV_FONT_ITALIC, 0.7, 0.7, 0, 2);
+PluginFindSecondariesBlobs::PluginFindSecondariesBlobs()
+{
+	cvInitFont(&font, CV_FONT_HERSHEY_SIMPLEX | CV_FONT_ITALIC, 0.7, 0.7, 0,
+		   2);
 
 	matching = new PatternMatching();
 
@@ -37,101 +38,169 @@ PluginFindSecondariesBlobs::PluginFindSecondariesBlobs() {
 	r_mat = cvCreateMat(2, 1, CV_32FC1);
 
 	M = cvCreateMat(2, 1, CV_32FC1);
-	M->data.fl[ 0 * M->cols + 0 ] = (float)15.0; // M_x
-	M->data.fl[ 1 * M->cols + 0 ] = (float)0.0; // M_y
+	M->data.fl[0 * M->cols + 0] = (float)15.0;	// M_x
+	M->data.fl[1 * M->cols + 0] = (float)0.0;	// M_y
 
 }
 
-int PluginFindSecondariesBlobs::process(Frame *frame) {
-	int colorId=frame->data[0]->blue_team->team_colorid;
-	for (CvBlobs::iterator it=frame->data[colorId]->blobs.begin(); it!=frame->data[colorId]->blobs.end(); ++it) {
-		int width = MAX( (*it).second->maxx - (*it).second->minx, (*it).second->maxy - (*it).second->miny );
-		width= (int) width*3;
-		bbox2D(cvGetSize(frame), width, cvPoint((*it).second->centroid.x, (*it).second->centroid.y), &r);  //calculate r box to set image roi later.
-		cvRectangle(frame, cvPoint(r.x, r.y), cvPoint(r.x+r.width, r.y+r.height), cvScalar(255, 0, 0, 0), 1, 8, 0);
+int PluginFindSecondariesBlobs::process(Item * item)
+{
+	Frame *frame;
+	frame = (Frame *) item;
+	int colorId = (*frame->data)[0]->blue_team->team_colorid;
+	for (CvBlobs::iterator it = (*frame->data)[colorId]->blobs.begin();
+	     it != (*frame->data)[colorId]->blobs.end(); ++it) {
+		int width = MAX((*it).second->maxx - (*it).second->minx,
+				(*it).second->maxy - (*it).second->miny);
+		width = (int)width *3;
+		bbox2D(cvGetSize(frame), width, cvPoint((*it).second->centroid.x, (*it).second->centroid.y), &r);	//calculate r box to set image roi later.
+		cvRectangle(frame, cvPoint(r.x, r.y),
+			    cvPoint(r.x + r.width, r.y + r.height),
+			    cvScalar(255, 0, 0, 0), 1, 8, 0);
 
-		std::vector<Marker *> markers;
-		Marker *mcenter = new Marker(); //main team marker
+		std::vector < Marker * >markers;
+		Marker *mcenter = new Marker();	//main team marker
 
-		mcenter->center.x = (int) (*it).second->centroid.x;
-		mcenter->center.y = (int) (*it).second->centroid.y;
+		mcenter->center.x = (int)(*it).second->centroid.x;
+		mcenter->center.y = (int)(*it).second->centroid.y;
 		mcenter->area = (*it).second->area;
 
-		for (unsigned int i=0; i < frame->data[0]->blue_team->usesColor.size(); ++i) {
-			int cid = frame->data[0]->blue_team->usesColor[i];
+		for (unsigned int i = 0;
+		     i < (*frame->data)[0]->blue_team->usesColor.size(); ++i) {
+			int cid = (*frame->data)[0]->blue_team->usesColor[i];
 
-			cvSetImageROI(frame->data[cid]->segmentated, cvRect(r.x, r.y, r.width, r.height));
-			frame->data[cid]->result =
-				cvLabel(frame->data[cid]->segmentated,
-						frame->data[cid]->labelImg,
-						frame->data[cid]->blobs);
-			cvFilterByArea(frame->data[cid]->blobs,10, 50000);
+			cvSetImageROI((*frame->data)[cid]->segmentated,
+				      cvRect(r.x, r.y, r.width, r.height));
+			(*frame->data)[cid]->result =
+			    cvLabel((*frame->data)[cid]->segmentated,
+				    (*frame->data)[cid]->labelImg,
+				    (*frame->data)[cid]->blobs);
+			cvFilterByArea((*frame->data)[cid]->blobs, 10, 50000);
 
 			for (CvBlobs::iterator
-					it2=frame->data[cid]->blobs.begin();
-					it2!=frame->data[cid]->blobs.end(); ++it2) {
+			     it2 = (*frame->data)[cid]->blobs.begin();
+			     it2 != (*frame->data)[cid]->blobs.end(); ++it2) {
 				Marker *m = new Marker();
-				m->center.x = (int) (*it2).second->centroid.x + r.x;
-				m->center.y = (int) (*it2).second->centroid.y + r.y;
+				m->center.x =
+				    (int)(*it2).second->centroid.x + r.x;
+				m->center.y =
+				    (int)(*it2).second->centroid.y + r.y;
 				m->colorid = cid;
 				m->area = (*it2).second->area;
 				markers.push_back(m);
 
-				cvCircle(frame, cvPoint((*it2).second->centroid.x+r.x, (*it2).second->centroid.y+r.y), 3, cvScalar(0, 255, 0, 0), 1, 8, 0);
+				cvCircle(frame,
+					 cvPoint((*it2).second->centroid.x +
+						 r.x,
+						 (*it2).second->centroid.y +
+						 r.y), 3, cvScalar(0, 255, 0,
+								   0), 1, 8, 0);
 			}
-			cvResetImageROI(frame->data[cid]->segmentated);
+			cvResetImageROI((*frame->data)[cid]->segmentated);
 		}
 
 		matching->calcMarkersAngle(mcenter, markers);
 		matching->sortMarkersByAngle(markers);
 
 		//TODO: it isn't efficient at all!
-		for (unsigned int j=0; j < frame->data[0]->blue_team->patches.size(); ++j) {
-			bool f = matching->matchingMarkersByPosition(frame->data[0]->blue_team->patches[j]->markers, markers);
+		for (unsigned int j = 0;
+		     j < (*frame->data)[0]->blue_team->patches.size(); ++j) {
+			bool f =
+			    matching->
+			    matchingMarkersByPosition((*frame->
+						       data)
+						      [0]->blue_team->patches
+						      [j]->markers,
+						      markers);
 			if (f) {
 				// Patch detected !!
-				frame->data[0]->blue_team->patches[j]->center = mcenter->center; //pixel position
-				frame->data[0]->blue_team->patches[j]->teamMarker.area = mcenter->area; // team marker area
-				for (unsigned int k=0; k < frame->data[0]->blue_team->patches[j]->markers.size(); k++) {
-					frame->data[0]->blue_team->patches[j]->markers[k]->center = markers[k]->center;
-					frame->data[0]->blue_team->patches[j]->markers[k]->area = markers[k]->area;
+				(*frame->data)[0]->blue_team->patches[j]->center = mcenter->center;	//pixel position
+				(*frame->data)[0]->blue_team->patches[j]->teamMarker.area = mcenter->area;	// team marker area
+				for (unsigned int k = 0;
+				     k <
+				     (*frame->data)[0]->blue_team->
+				     patches[j]->markers.size(); k++) {
+					(*frame->data)[0]->blue_team->
+					    patches[j]->markers[k]->center =
+					    markers[k]->center;
+					(*frame->data)[0]->blue_team->
+					    patches[j]->markers[k]->area =
+					    markers[k]->area;
 				}
 
-				frame->data[0]->blue_team->patches[j]->field_pos
-					= frame->data[0]->homography->transPoint(mcenter->center); //field position
+				(*frame->data)[0]->blue_team->patches[j]->field_pos = (*frame->data)[0]->homography->transPoint(mcenter->center);	//field position
 
-				frame->data[0]->blue_team->patches[j]->orientation = markers[1]->angle;
-				rotation_matrix(frame->data[0]->blue_team->patches[j]->orientation);
-				frame->data[0]->blue_team->patches[j]->detected = true;  // detected object
+				(*frame->data)[0]->blue_team->
+				    patches[j]->orientation = markers[1]->angle;
+				rotation_matrix((*frame->data)[0]->
+						blue_team->patches[j]->
+						orientation);
+				(*frame->data)[0]->blue_team->patches[j]->detected = true;	// detected object
 
 				//rotation
-				r_mat->data.fl[ 0 * r_mat->cols + 0 ] = M->data.fl[ 0 * M->cols + 0 ] * rot_mat->data.fl[ 0 * rot_mat->cols + 0 ] + M->data.fl[ 1 * M->cols + 0 ] * rot_mat->data.fl[ 0 * rot_mat->cols + 1 ];
-				r_mat->data.fl[ 1 * r_mat->cols + 0 ] = M->data.fl[ 0 * M->cols + 0 ] * rot_mat->data.fl[ 1 * rot_mat->cols + 0 ] + M->data.fl[ 1 * M->cols + 0 ] * rot_mat->data.fl[ 1 * rot_mat->cols + 1 ];
-				int x = (int) cvRound(r_mat->data.fl[ 0 * r_mat->cols ]);
-				int y = (int) cvRound(r_mat->data.fl[ 1 * r_mat->cols ]);
+				r_mat->data.fl[0 * r_mat->cols + 0] =
+				    M->data.fl[0 * M->cols +
+						  0] * rot_mat->data.fl[0 *
+									   rot_mat->cols
+									   +
+									   0] +
+				    M->data.fl[1 * M->cols +
+						  0] * rot_mat->data.fl[0 *
+									   rot_mat->cols
+									   + 1];
+				r_mat->data.fl[1 * r_mat->cols + 0] =
+				    M->data.fl[0 * M->cols +
+						  0] * rot_mat->data.fl[1 *
+									   rot_mat->cols
+									   +
+									   0] +
+				    M->data.fl[1 * M->cols +
+						  0] * rot_mat->data.fl[1 *
+									   rot_mat->cols
+									   + 1];
+				int x =
+				    (int)
+				    cvRound(r_mat->data.fl[0 * r_mat->cols]);
+				int y =
+				    (int)
+				    cvRound(r_mat->data.fl[1 * r_mat->cols]);
 
 				//traslation
-				x = x + frame->data[0]->blue_team->patches[j]->center.x;
-				y = y + frame->data[0]->blue_team->patches[j]->center.y;
-				cvCircle(frame, cvPoint(x, y), 2, cvScalar(255, 255, 0), CV_FILLED, CV_AA, 0);
+				x = x +
+				    (*frame->data)[0]->blue_team->
+				    patches[j]->center.x;
+				y = y +
+				    (*frame->data)[0]->blue_team->
+				    patches[j]->center.y;
+				cvCircle(frame, cvPoint(x, y), 2,
+					 cvScalar(255, 255, 0), CV_FILLED,
+					 CV_AA, 0);
 
 				std::stringstream Num;
 				std::string str;
-				Num << frame->data[0]->blue_team->patches[j]->id;
+				Num << (*frame->data)[0]->blue_team->
+				    patches[j]->id;
 
 				str = Num.str();
-				char* char_type = (char*) str.c_str();
-				cvPutText (frame, char_type, cvPoint(x, y), &font, cvScalar(255, 0, 0));
+				char *char_type = (char *)str.c_str();
+				cvPutText(frame, char_type, cvPoint(x, y),
+					  &font, cvScalar(255, 0, 0));
 
-				for (unsigned int k=0; k < markers.size(); ++k) {
-					cvLine(frame, cvPoint(mcenter->center.x, mcenter->center.y), cvPoint(markers[k]->center.x, markers[k]->center.y), cvScalar(255,0,0), 1);
-					frame->data[0]->blue_team->patches[j]->markers[k]->dist = matching->euclideanDistance2D(mcenter->center, markers[k]->center);	// distance between central main marker and a marker.
+				for (unsigned int k = 0; k < markers.size();
+				     ++k) {
+					cvLine(frame,
+					       cvPoint(mcenter->center.x,
+						       mcenter->center.y),
+					       cvPoint(markers[k]->center.x,
+						       markers[k]->center.y),
+					       cvScalar(255, 0, 0), 1);
+					(*frame->data)[0]->blue_team->patches[j]->markers[k]->dist = matching->euclideanDistance2D(mcenter->center, markers[k]->center);	// distance between central main marker and a marker.
 				}
 			}
 		}
 
 		//cleaning
-		for (unsigned int j=0; j < markers.size(); ++j) {
+		for (unsigned int j = 0; j < markers.size(); ++j) {
 			markers[j]->~Marker();
 			markers.erase(markers.begin());
 		}
@@ -140,16 +209,18 @@ int PluginFindSecondariesBlobs::process(Frame *frame) {
 	return 0;
 }
 
-void PluginFindSecondariesBlobs::rotation_matrix(float tita) {
-    //cvZero(rot_mat);
-    rot_mat->data.fl[ 0 * rot_mat->cols + 0 ] = (float)cos(tita);
-    rot_mat->data.fl[ 0 * rot_mat->cols + 1 ] = (float)-sin(tita);
-    rot_mat->data.fl[ 1 * rot_mat->cols + 0 ] = (float)sin(tita);
-    rot_mat->data.fl[ 1 * rot_mat->cols + 1 ] = (float)cos(tita);
+void PluginFindSecondariesBlobs::rotation_matrix(float tita)
+{
+	//cvZero(rot_mat);
+	rot_mat->data.fl[0 * rot_mat->cols + 0] = (float)cos(tita);
+	rot_mat->data.fl[0 * rot_mat->cols + 1] = (float)-sin(tita);
+	rot_mat->data.fl[1 * rot_mat->cols + 0] = (float)sin(tita);
+	rot_mat->data.fl[1 * rot_mat->cols + 1] = (float)cos(tita);
 }
 
-void PluginFindSecondariesBlobs::bbox2D(const CvSize imgSize, const int px_length,
-			  const CvPoint center, CvRect * box)
+void PluginFindSecondariesBlobs::bbox2D(const CvSize imgSize,
+					const int px_length,
+					const CvPoint center, CvRect * box)
 {
 	int l = (int)(px_length / 2);
 

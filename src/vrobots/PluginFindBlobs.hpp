@@ -28,7 +28,7 @@
 class PluginFindBlobs:public Plugin {
  public:
 
-	virtual int process(Frame * frame);
+	virtual int process(Item * item);
 
 };
 

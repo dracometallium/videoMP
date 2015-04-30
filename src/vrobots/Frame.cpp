@@ -4,6 +4,7 @@ Frame::Frame(IplImage * iframe)
  : Item()
 {
 	frame = iframe;
+	data=cdata;
 }
 
 Frame::~Frame()

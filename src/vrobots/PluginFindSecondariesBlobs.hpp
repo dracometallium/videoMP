@@ -31,9 +31,8 @@
 class PluginFindSecondariesBlobs:public Plugin {
  public:
 	PluginFindSecondariesBlobs();
-	virtual ~ PluginFindSecondariesBlobs();
 
-	virtual int process(Frame * frame);
+	virtual int process(Item * item);
 
  private:
 	void rotation_matrix(float tita);

@@ -27,12 +27,14 @@ PluginColorSegmentation::PluginColorSegmentation(std::vector < sColor * >&color)
 	segmentation.buildThreshold(color);
 }
 
-int PluginColorSegmentation::process(Frame * frame)
+int PluginColorSegmentation::process(Item * item)
 {
-	int hIn = frame->data[0]->image_hsv->height;
-	int wIn = frame->data[0]->image_hsv->width;
-	int rowSizeIn = frame->data[0]->image_hsv->widthStep;	// Size of row in bytes, including extra padding
-	char *imOfsIn = frame->data[0]->image_hsv->imageData;	// Pointer to the start of the input image HSV pixels.
+	Frame *frame;
+	frame = (Frame *) item;
+	int hIn = (*frame->data)[0]->image_hsv->height;
+	int wIn = (*frame->data)[0]->image_hsv->width;
+	int rowSizeIn = (*frame->data)[0]->image_hsv->widthStep;	// Size of row in bytes, including extra padding
+	char *imOfsIn = (*frame->data)[0]->image_hsv->imageData;	// Pointer to the start of the input image HSV pixels.
 
 	for (int y = 0; y < hIn; y++) {
 		for (int x = 0; x < wIn; x++) {
@@ -43,21 +45,18 @@ int PluginColorSegmentation::process(Frame * frame)
 
 			// Determina de qué color es el píxel HSV.
 			unsigned c =
-			    ((segmentation.
-			      h_class[H] & segmentation.s_class[S]) &
-			     segmentation.v_class[V]);
+			    ((segmentation.h_class[H] & segmentation.
+			      s_class[S]) & segmentation.v_class[V]);
 
 			//TODO: cambiar 2050 por una constante definida en segmentation.cpp, que es el índice del arreglo nombrado "hash".
 			if ((c != 0) && (c < HASH_INDEX_MAX)) {
 				int colorId = segmentation.hash[c];
-				if (frame->data[colorId]->enable)
-					frame->data[colorId]->
-					    segmentated->imageData[frame->
-								   data
-								   [colorId]->segmentated->
-								   widthStep *
-								   y + x] =
-					    (char)255;
+				if ((*frame->data)[colorId]->enable)
+					(*frame->data)[colorId]->segmentated->
+					    imageData[(*frame->data)
+						      [colorId]->
+						      segmentated->widthStep *
+						      y + x] = (char)255;
 			}
 		}
 	}

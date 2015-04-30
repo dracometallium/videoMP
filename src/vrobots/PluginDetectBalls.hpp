@@ -31,7 +31,7 @@ public:
 	PluginDetectBalls();
 	virtual ~PluginDetectBalls();
 
-	virtual int process(Frame * frame);
+	virtual int process(Item * item);
 
 private:
 	CvRect r;

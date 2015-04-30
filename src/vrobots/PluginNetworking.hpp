@@ -38,7 +38,7 @@ class PluginNetworking:public Plugin {
 	PluginNetworking();
 	PluginNetworking(int _n);
 
-	virtual int process(Frame * frame);
+	virtual int process(Item * item);
 
  public:
 	unsigned short destPort;

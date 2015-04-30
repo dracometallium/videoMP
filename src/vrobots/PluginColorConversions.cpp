@@ -21,9 +21,11 @@
 
 #include "PluginColorConversions.hpp"
 
-int PluginColorConversions::process(Frame * frame)
+int PluginColorConversions::process(Item * item)
 {
-	cvCvtColor(frame->frame, frame->data[0]->image_hsv, CV_BGR2GRAY);	// proyecto Laser
+	Frame *frame;
+	frame = (Frame *) item;
+	cvCvtColor(frame->frame, (*frame->data)[0]->image_hsv, CV_BGR2GRAY);	// proyecto Laser
 
 	return 0;
 }

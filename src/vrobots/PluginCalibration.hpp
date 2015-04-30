@@ -16,7 +16,7 @@ class PluginCalibration:public Plugin {
  public:
 	PluginCalibration();
 
-	virtual int process(Frame * frame);
+	virtual int process(Item * item);
 
  private:
 	int i;

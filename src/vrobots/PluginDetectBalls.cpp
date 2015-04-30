@@ -21,19 +21,21 @@
 
 #include "PluginDetectBalls.hpp"
 
-int PluginDetectBalls::process(Frame * frame)
+int PluginDetectBalls::process(Item * item)
 {
-	colorid = frame->data[0]->ball->color_id;
-	frame->data[colorid]->result =
-	    cvLabel(frame->data[colorid]->segmentated,
-		    frame->data[colorid]->labelImg,
-		    frame->data[colorid]->blobs);
-	cvFilterByArea(frame->data[colorid]->blobs,
-		       frame->data[colorid]->ball->area_min,
-		       frame->data[colorid]->ball->area_max);
+	Frame *frame;
+	frame = (Frame *) item;
+	colorid = (*frame->data)[0]->ball->color_id;
+	(*frame->data)[colorid]->result =
+	    cvLabel((*frame->data)[colorid]->segmentated,
+		    (*frame->data)[colorid]->labelImg,
+		    (*frame->data)[colorid]->blobs);
+	cvFilterByArea((*frame->data)[colorid]->blobs,
+		       (*frame->data)[colorid]->ball->area_min,
+		       (*frame->data)[colorid]->ball->area_max);
 
-	for (CvBlobs::iterator it = frame->data[colorid]->blobs.begin();
-	     it != frame->data[colorid]->blobs.end(); ++it) {
+	for (CvBlobs::iterator it = (*frame->data)[colorid]->blobs.begin();
+	     it != (*frame->data)[colorid]->blobs.end(); ++it) {
 		int width = MAX((*it).second->maxx - (*it).second->minx,
 				(*it).second->maxy - (*it).second->miny);
 		width = (int)width;	//*1.5;
@@ -46,11 +48,11 @@ int PluginDetectBalls::process(Frame * frame)
 									     0),
 			    1, 8, 0);
 
-		frame->data[colorid]->ball->center.x =
+		(*frame->data)[colorid]->ball->center.x =
 		    (int)(*it).second->centroid.x;
-		frame->data[colorid]->ball->center.y =
+		(*frame->data)[colorid]->ball->center.y =
 		    (int)(*it).second->centroid.y;
-		frame->data[colorid]->ball->field_pos = frame->data[0]->homography->transPoint(frame->data[colorid]->ball->center);	//field position
+		(*frame->data)[colorid]->ball->field_pos = (*frame->data)[0]->homography->transPoint((*frame->data)[colorid]->ball->center);	//field position
 
 		break;
 	}

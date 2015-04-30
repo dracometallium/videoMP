@@ -7,8 +7,11 @@
 
 #include "PluginBlur.hpp"
 
-int PluginBlur::process(Frame * frame)
+int PluginBlur::process(Item * item)
 {
-	cvSmooth(frame->data[0]->image_hsv, frame->data[0]->image_hsv, CV_BLUR, 3);
+	Frame *frame;
+	frame = (Frame *) item;
+	cvSmooth((*frame->data)[0]->image_hsv, (*frame->data)[0]->image_hsv, CV_BLUR,
+		 3);
 	return 0;
 }

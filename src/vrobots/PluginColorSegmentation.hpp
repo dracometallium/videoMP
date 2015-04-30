@@ -31,7 +31,7 @@ class PluginColorSegmentation: public Plugin {
 public:
 	PluginColorSegmentation(std::vector<sColor*>&color);
 
-	virtual int process(Frame * frame);
+	virtual int process(Item * item);
 
 private:
 	int getPixelColorType(int H, int S, int V);

@@ -12,8 +12,10 @@ PluginCalibration::PluginCalibration()
 	i = 0;
 }
 
-int PluginCalibration::process(Frame * frame)
+int PluginCalibration::process(Item * item)
 {
+	Frame *frame;
+	frame = (Frame *) item;
 	if (i == 0) {
 		intrinsic = (CvMat *) cvLoad("Intrinsics.xml");
 		distortion = (CvMat *) cvLoad("Distortion.xml");

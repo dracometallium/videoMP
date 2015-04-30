@@ -25,9 +25,9 @@
 #include "../Plugin.hpp"
 #include "Frame.hpp"
 
-class PluginMorphology: public Plugin {
-public:
-	virtual int process(Frame *frame);
+class PluginMorphology:public Plugin {
+ public:
+	virtual int process(Item * item);
 };
 
 #endif

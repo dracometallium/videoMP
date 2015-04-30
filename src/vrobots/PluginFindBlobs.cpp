@@ -20,11 +20,14 @@
 //========================================================================
 
 #include "PluginFindBlobs.hpp"
-int PluginFindBlobs::process(Frame * frame) {
-	frame->data[cBLUE]->result = cvLabel(frame->data[cBLUE]->segmentated,
-			frame->data[cBLUE]->labelImg, frame->data[cBLUE]->blobs);
-	cvFilterByArea(frame->data[cBLUE]->blobs,5, 50000);
+int PluginFindBlobs::process(Item * item)
+{
+	Frame *frame;
+	frame = (Frame *) item;
+	(*frame->data)[cBLUE]->result = cvLabel((*frame->data)[cBLUE]->segmentated,
+					     (*frame->data)[cBLUE]->labelImg,
+					     (*frame->data)[cBLUE]->blobs);
+	cvFilterByArea((*frame->data)[cBLUE]->blobs, 5, 50000);
 
 	return 0;
 }
-

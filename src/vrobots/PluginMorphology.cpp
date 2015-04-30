@@ -21,13 +21,15 @@
 
 #include "PluginMorphology.hpp"
 
-int PluginMorphology::process(Frame * frame)
+int PluginMorphology::process(Item * item)
 {
-	cvMorphologyEx(frame->data[cBLUE]->segmentated,
-		       frame->data[cBLUE]->segmentated, NULL,
-		       frame->data[cBLUE]->morphKernel, CV_MOP_OPEN, 1);
-	cvMorphologyEx(frame->data[cYELLOW]->segmentated,
-		       frame->data[cYELLOW]->segmentated, NULL,
-		       frame->data[cYELLOW]->morphKernel, CV_MOP_OPEN, 1);
+	Frame *frame;
+	frame = (Frame *) item;
+	cvMorphologyEx((*frame->data)[cBLUE]->segmentated,
+		       (*frame->data)[cBLUE]->segmentated, NULL,
+		       (*frame->data)[cBLUE]->morphKernel, CV_MOP_OPEN, 1);
+	cvMorphologyEx((*frame->data)[cYELLOW]->segmentated,
+		       (*frame->data)[cYELLOW]->segmentated, NULL,
+		       (*frame->data)[cYELLOW]->morphKernel, CV_MOP_OPEN, 1);
 	return 0;
 }

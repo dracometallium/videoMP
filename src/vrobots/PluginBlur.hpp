@@ -15,7 +15,7 @@ class PluginBlur:public Plugin {
 
  public:
 
-	virtual int process(Frame * frame);
+	virtual int process(Item * item);
 };
 
 #endif
