@@ -3,6 +3,7 @@
 Input::Input(RingStack * rs)
 {
 	ringStack = rs;
+	numItems = 0;
 	running = 0;
 }
 

@@ -26,6 +26,5 @@ int PluginColorConversions::process(Item * item)
 	Frame *frame;
 	frame = (Frame *) item;
 	cvCvtColor(frame->frame, (*frame->data)[0]->image_hsv, CV_BGR2GRAY);	// proyecto Laser
-
 	return 0;
 }

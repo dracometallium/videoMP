@@ -25,6 +25,7 @@ Frame::Frame(IplImage * iframe)
 		*sdata = *bdata[i];
 		sdata->segmentated = cvCloneImage(bdata[i]->segmentated);
 	}
+	(*data)[0]->image_hsv = cvCreateImage(cvGetSize(iframe), 8, 1);
 	(*data)[0]->blue_team->patches.clear();
 	for (unsigned int j = 0; j < bdata[0]->blue_team->patches.size(); ++j) {
 		pat = new Pattern();
@@ -36,12 +37,13 @@ Frame::Frame(IplImage * iframe)
 Frame::~Frame()
 {
 	delete frame;
+	delete(*data)[0]->image_hsv;
 	for (unsigned int j = 0; j < bdata[0]->blue_team->patches.size(); ++j) {
-		delete (*data)[0]->blue_team->patches[j];
+		delete(*data)[0]->blue_team->patches[j];
 	}
 	for (int i = 0; i < NUM_COLOR_TYPES; ++i) {
-		delete (*data)[i]->segmentated;
-		delete (*data)[i];
+		delete(*data)[i]->segmentated;
+		delete(*data)[i];
 	}
 	delete data;
 }

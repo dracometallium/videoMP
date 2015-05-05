@@ -42,10 +42,11 @@ CaptureFromFile::CaptureFromFile(RingStack * rs, std::string _filename)
 
 Item *CaptureFromFile::generate()
 {
-	// TODO: fps should be changeable to video reproduction speed
 	Frame *nframe;
 	IplImage tIpl;
 	IplImage *ipl;
+	// TODO: fps should be changeable to video reproduction speed
+	usleep(1000000 / fps);
 
 	//cvCloneImage turns a Mat to a IplImage
 	capture >> tframe;	// get a new frame from camera.

@@ -20,7 +20,6 @@ class PluginCalibration:public Plugin {
 
  private:
 	int i;
-	IplImage *t;
 	IplImage *z;
 	CvMat *intrinsic;
 	CvMat *distortion;

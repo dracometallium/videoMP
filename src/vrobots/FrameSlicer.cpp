@@ -30,13 +30,14 @@ int FrameSlicer::optimalSize(int imgH, int imgW, int parts)
 
 Item **FrameSlicer::slice(Item * item, int numParts)
 {
-	Frame *frame;
 	int imgH, imgW, i;
 	int x, y, h, w;
+	Frame *frame;
 	Item **parts;
 	frame = (Frame *) item;
 	imgH = frame->frame->height;
 	imgW = frame->frame->width;
+#pragma omp critical
 	if (oldNumParts != numParts) {
 		optimalSize(imgH, imgW, numParts);
 		oldNumParts = numParts;
@@ -55,7 +56,7 @@ Item **FrameSlicer::slice(Item * item, int numParts)
 		w = (x + w > imgW) ? imgW - x : w;
 		h = (y + h > imgH) ? imgH - y : h;
 
-		parts[i] = new Item;
+		parts[i] = new Frame(frame->frame);
 	}
 	return parts;
 }
