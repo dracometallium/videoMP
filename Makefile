@@ -1,31 +1,28 @@
 NAME=videoMP
 
+DEBUG=
 LFLAGS=-fopenmp
-CFLAGS=-Wall -g -fopenmp -pipe
-#CFLAGS=-Wall -O3 -fopenmp -pipe
+CFLAGS=-Wall -O3 -fopenmp -pipe
 INCPATH=-I/usr/share/qt4/mkspecs/linux-g++-64 -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4 -I./src -I./src/vrobots  -I/usr/include/opencv2 -I/usr/include/opencv -I/usr/local/lib -I/usr/local/include
 LIBS=-lopencv_core -lopencv_imgproc -lopencv_calib3d -lopencv_video -lopencv_features2d -lopencv_ml -lopencv_highgui -lopencv_objdetect -lopencv_contrib -lopencv_legacy -lopencv_flann -lcvblob -lQtGui -lQtCore 
-DEBUG=
 
-SOURCES=Input.o Item.o ItemSwitch.o main.o Plugin.o PluginStack.o RingStack.o Slicer.o
+SOURCES= src/Item.cpp src/PluginStack.cpp src/Input.cpp src/RingStack.cpp src/Plugin.cpp src/Slicer.cpp src/ItemSwitch.cpp src/main.cpp src/vrobots/PluginFindBlobs.cpp src/vrobots/PluginColorConversions.cpp src/vrobots/pattern.cpp src/vrobots/FrameSlicer.cpp src/vrobots/practicalsocket.cpp src/vrobots/CaptureFromFile.cpp src/vrobots/ball.cpp src/vrobots/PluginBlur.cpp src/vrobots/segmentation.cpp src/vrobots/pattern_matching.cpp src/vrobots/PluginDetectBalls.cpp src/vrobots/PluginFindSecondariesBlobs.cpp src/vrobots/colorspace.cpp src/vrobots/Frame.cpp src/vrobots/PluginMorphology.cpp src/vrobots/marker.cpp src/vrobots/team.cpp src/vrobots/PluginNetworking.cpp src/vrobots/homography.cpp src/vrobots/PluginColorSegmentation.cpp src/vrobots/PluginCalibration.cpp
 
-SVROBOTS=ball.o CaptureFromFile.o colorspace.o Frame.o FrameSlicer.o homography.o marker.o pattern.o pattern_matching.o PluginBlur.o PluginCalibration.o PluginColorConversions.o PluginColorSegmentation.o PluginDetectBalls.o PluginFindSecondariesBlobs.o PluginFindBlobs.o PluginMorphology.o PluginNetworking.o practicalsocket.o segmentation.o team.o
+OBJECTS=$(SOURCES:.cpp=.o)
 
 all: $(NAME)
 
-$(NAME): $(SOURCES) $(SVROBOTS)
-	g++ *.o $(DEBUG) $(LFLAGS) $(LIBS) $(INCPATH) -o $(NAME)
+$(NAME): $(OBJECTS)
+	g++ $(OBJECTS) $(DEBUG) $(LFLAGS) $(LIBS) $(INCPATH) -o $(NAME)
 
-$(SOURCES):
-	g++  $(INCPATH) $(CFLAGS) $(DEBUG) -c src/$(@:.o=.cpp) -o $@
-
-$(SVROBOTS):
-	g++  $(INCPATH) $(CFLAGS) $(DEBUG) -c src/vrobots/$(@:.o=.cpp) -o $@
+.cpp.o:
+	g++  $(INCPATH) $(CFLAGS) $(DEBUG) -c $< -o $@
 
 debug: DEBUG=-D DEBUG
+debug: CFLAGS=-Wall -g -fopenmp -pipe
 
 debug: all
 
 clean:
-	rm -rf *.o
+	rm -rf $(OBJECTS)
 	rm -f $(NAME)
