@@ -1,4 +1,5 @@
 #include "Frame.hpp"
+#include <omp.h>
 
 #include "ball.h"
 #include "datastruct.h"
@@ -7,51 +8,65 @@
 #include "pattern.h"
 #include "team.h"
 
-std::vector < sData * >Frame::bdata;
+std::vector < std::vector < sData * >*> Frame::dpool;
 
 Frame::Frame(IplImage * iframe)
  : Item()
 {
-	sData *sdata;
-	Pattern *pat;
 	frame = iframe;
-	data = new std::vector < sData * >();
-	for (int i = 0; i < NUM_COLOR_TYPES; ++i) {
-		sdata = new sData();
-		data->push_back(sdata);
-		*sdata = *bdata[i];
-		sdata->segmentated = cvCloneImage(bdata[i]->segmentated);
-	}
-	(*data)[0]->image_hsv = cvCreateImage(cvGetSize(frame), frame->depth,
-					      frame->nChannels);
-	(*data)[0]->blue_team->patches.clear();
-	for (unsigned int j = 0; j < bdata[0]->blue_team->patches.size(); ++j) {
-		pat = new Pattern();
-		*pat = (*bdata[0]->blue_team->patches[j]);
-		(*data)[0]->blue_team->patches.push_back(pat);
-	}
+	data = NULL;
 }
 
 Frame::~Frame()
 {
 	cvReleaseImage(&frame);
-	cvReleaseImage(&(*data)[0]->image_hsv);
-	for (unsigned int j = 0; j < bdata[0]->blue_team->patches.size(); ++j) {
-		delete(*data)[0]->blue_team->patches[j];
+	if (data != NULL) {
+#pragma omp critical (dpool)
+		dpool.push_back(data);
+		data = NULL;
 	}
-	for (int i = 0; i < NUM_COLOR_TYPES; ++i) {
-		cvReleaseImage(&(*data)[i]->segmentated);
-		delete(*data)[i];
-	}
-	delete data;
 }
 
-int Frame::Init(IplImage * img)
+int Frame::initData()
+{
+	data=NULL;
+#pragma omp critical (dpool)
+	{
+		if(!dpool.empty()){
+			data = dpool.back();
+			dpool.pop_back();
+		}
+	}
+	if(data==NULL){
+		data=newData(frame);
+	}
+	resetData();
+	return 0;
+}
+	
+
+void Frame::resetData()
+{
+	for (int i = 0; i < NUM_COLOR_TYPES; ++i) {
+		cvSet((*data)[i]->segmentated, cvScalar(0));	// Clear image to black.
+		(*data)[i]->result = 0;
+		cvReleaseBlobs((*data)[i]->blobs);
+		cvReleaseTracks((*data)[i]->tracks);
+	}
+
+	for (unsigned int j = 0; j < (*data)[0]->blue_team->patches.size(); ++j)
+		(*data)[0]->blue_team->patches[j]->detected = false;
+
+}
+
+std::vector < sData * >*Frame::newData(IplImage * img)
 {
 	Team *blue_team;
 	Team *yellow_team;
 	Ball *ball;
 	Homography *h;
+	std::vector < sData * > *ndata;
+	ndata = new std::vector < sData * >;
 
 	CvPoint p1, p2, p3, p4;
 	CvPoint u1, u2, u3, u4;
@@ -195,30 +210,30 @@ int Frame::Init(IplImage * img)
 	CvSize imgSize = cvGetSize(img);
 
 	for (int i = 0; i < NUM_COLOR_TYPES; i++) {
-		bdata.push_back(new sData());
-		bdata[i]->image_hsv =
+		(*ndata).push_back(new sData());
+		(*ndata)[i]->image_hsv =
 		    cvCreateImage(imgSize, img->depth, img->nChannels);
-		bdata[i]->segmentated = cvCreateImage(imgSize, 8, 1);
-		cvSet(bdata[i]->segmentated, cvScalar(0));	// Clear image to black.
-		bdata[i]->morphKernel =
+		(*ndata)[i]->segmentated = cvCreateImage(imgSize, 8, 1);
+		cvSet((*ndata)[i]->segmentated, cvScalar(0));	// Clear image to black.
+		(*ndata)[i]->morphKernel =
 		    cvCreateStructuringElementEx(2, 2, 1, 1, CV_SHAPE_RECT,
 						 NULL);
-		bdata[i]->labelImg = cvCreateImage(imgSize, IPL_DEPTH_LABEL, 1);
-		cvReleaseBlobs(bdata[i]->blobs);
-		cvReleaseTracks(bdata[i]->tracks);
-		bdata[i]->blue_team = blue_team;
-		bdata[i]->yellow_team = yellow_team;
-		bdata[i]->ball = ball;
-		bdata[i]->enable = false;
-		bdata[i]->homography = h;
-		bdata[i]->n = 1;
-		bdata[i]->frameNumber = 0;
+		(*ndata)[i]->labelImg = cvCreateImage(imgSize, IPL_DEPTH_LABEL, 1);
+		cvReleaseBlobs((*ndata)[i]->blobs);
+		cvReleaseTracks((*ndata)[i]->tracks);
+		(*ndata)[i]->blue_team = blue_team;
+		(*ndata)[i]->yellow_team = yellow_team;
+		(*ndata)[i]->ball = ball;
+		(*ndata)[i]->enable = false;
+		(*ndata)[i]->homography = h;
+		(*ndata)[i]->n = 1;
+		(*ndata)[i]->frameNumber = 0;
 	}
 
-	bdata[blue_team->team_colorid]->enable = true;
+	(*ndata)[blue_team->team_colorid]->enable = true;
 	for (unsigned int i = 0; i < blue_team->usesColor.size(); ++i) {
-		bdata[blue_team->usesColor[i]]->enable = true;
+		(*ndata)[blue_team->usesColor[i]]->enable = true;
 	}
-	bdata[ball->color_id]->enable = true;
-	return 0;
+	(*ndata)[ball->color_id]->enable = true;
+	return ndata;
 }
