@@ -38,7 +38,6 @@ CaptureFromFile::CaptureFromFile(RingStack * rs, std::string _filename)
 	total_frames = (int)capture.get(CV_CAP_PROP_FRAME_COUNT);
 	frame_height = (int)capture.get(CV_CAP_PROP_FRAME_HEIGHT);
 	frame_width = (int)capture.get(CV_CAP_PROP_FRAME_WIDTH);
-	Frame::Init(cvCreateImage(cvSize(frame_height, frame_width), 8, 3));
 }
 
 Item *CaptureFromFile::generate()

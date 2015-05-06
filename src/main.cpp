@@ -181,8 +181,8 @@ int main()
 	ps2->addPlugin(new PluginColorConversions());
 	ps2->addPlugin(new PluginColorSegmentation(color));
 	ps2->addPlugin(new PluginMorphology());
-	//ps2->addPlugin(new PluginFindBlobs());
-	//ps2->addPlugin(new PluginFindSecondariesBlobs());
+	ps2->addPlugin(new PluginFindBlobs());
+	ps2->addPlugin(new PluginFindSecondariesBlobs());
 	ps2->addPlugin(new PluginNetworking(1));
 
 	is->addPluginStack(ps1);

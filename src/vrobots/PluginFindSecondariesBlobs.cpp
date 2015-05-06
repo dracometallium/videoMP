@@ -53,8 +53,8 @@ int PluginFindSecondariesBlobs::process(Item * item)
 		int width = MAX((*it).second->maxx - (*it).second->minx,
 				(*it).second->maxy - (*it).second->miny);
 		width = (int)width *3;
-		bbox2D(cvGetSize(frame), width, cvPoint((*it).second->centroid.x, (*it).second->centroid.y), &r);	//calculate r box to set image roi later.
-		cvRectangle(frame, cvPoint(r.x, r.y),
+		bbox2D(cvGetSize(frame->frame), width, cvPoint((*it).second->centroid.x, (*it).second->centroid.y), &r);	//calculate r box to set image roi later.
+		cvRectangle(frame->frame, cvPoint(r.x, r.y),
 			    cvPoint(r.x + r.width, r.y + r.height),
 			    cvScalar(255, 0, 0, 0), 1, 8, 0);
 
@@ -89,7 +89,7 @@ int PluginFindSecondariesBlobs::process(Item * item)
 				m->area = (*it2).second->area;
 				markers.push_back(m);
 
-				cvCircle(frame,
+				cvCircle(frame->frame,
 					 cvPoint((*it2).second->centroid.x +
 						 r.x,
 						 (*it2).second->centroid.y +
@@ -172,7 +172,7 @@ int PluginFindSecondariesBlobs::process(Item * item)
 				y = y +
 				    (*frame->data)[0]->blue_team->
 				    patches[j]->center.y;
-				cvCircle(frame, cvPoint(x, y), 2,
+				cvCircle(frame->frame, cvPoint(x, y), 2,
 					 cvScalar(255, 255, 0), CV_FILLED,
 					 CV_AA, 0);
 
@@ -183,12 +183,12 @@ int PluginFindSecondariesBlobs::process(Item * item)
 
 				str = Num.str();
 				char *char_type = (char *)str.c_str();
-				cvPutText(frame, char_type, cvPoint(x, y),
+				cvPutText(frame->frame, char_type, cvPoint(x, y),
 					  &font, cvScalar(255, 0, 0));
 
 				for (unsigned int k = 0; k < markers.size();
 				     ++k) {
-					cvLine(frame,
+					cvLine(frame->frame,
 					       cvPoint(mcenter->center.x,
 						       mcenter->center.y),
 					       cvPoint(markers[k]->center.x,

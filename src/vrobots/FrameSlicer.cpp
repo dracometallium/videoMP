@@ -57,6 +57,7 @@ Item **FrameSlicer::slice(Item * item, int numParts)
 		h = (y + h > imgH) ? imgH - y : h;
 
 		parts[i] = new Frame(frame->frame);
+		((Frame *)parts[i])->initData();;
 	}
 	return parts;
 }

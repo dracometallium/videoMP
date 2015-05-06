@@ -8,7 +8,7 @@
 #include "pattern.h"
 #include "team.h"
 
-std::vector < std::vector < sData * >*> Frame::dpool;
+std::vector < std::vector < sData * >*>Frame::dpool;
 
 Frame::Frame(IplImage * iframe)
  : Item()
@@ -22,28 +22,29 @@ Frame::~Frame()
 	cvReleaseImage(&frame);
 	if (data != NULL) {
 #pragma omp critical (dpool)
-		dpool.push_back(data);
+		{
+			dpool.push_back(data);
+		}
 		data = NULL;
 	}
 }
 
 int Frame::initData()
 {
-	data=NULL;
+	data = NULL;
 #pragma omp critical (dpool)
 	{
-		if(!dpool.empty()){
+		if (!dpool.empty()) {
 			data = dpool.back();
 			dpool.pop_back();
 		}
 	}
-	if(data==NULL){
-		data=newData(frame);
+	if (data == NULL) {
+		data = newData(frame);
 	}
 	resetData();
 	return 0;
 }
-	
 
 void Frame::resetData()
 {
@@ -65,7 +66,7 @@ std::vector < sData * >*Frame::newData(IplImage * img)
 	Team *yellow_team;
 	Ball *ball;
 	Homography *h;
-	std::vector < sData * > *ndata;
+	std::vector < sData * >*ndata;
 	ndata = new std::vector < sData * >;
 
 	CvPoint p1, p2, p3, p4;
@@ -218,7 +219,8 @@ std::vector < sData * >*Frame::newData(IplImage * img)
 		(*ndata)[i]->morphKernel =
 		    cvCreateStructuringElementEx(2, 2, 1, 1, CV_SHAPE_RECT,
 						 NULL);
-		(*ndata)[i]->labelImg = cvCreateImage(imgSize, IPL_DEPTH_LABEL, 1);
+		(*ndata)[i]->labelImg =
+		    cvCreateImage(imgSize, IPL_DEPTH_LABEL, 1);
 		cvReleaseBlobs((*ndata)[i]->blobs);
 		cvReleaseTracks((*ndata)[i]->tracks);
 		(*ndata)[i]->blue_team = blue_team;
