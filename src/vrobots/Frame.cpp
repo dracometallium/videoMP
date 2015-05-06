@@ -15,9 +15,6 @@ Frame::Frame(IplImage * iframe)
 	sData *sdata;
 	Pattern *pat;
 	frame = iframe;
-	if (bdata.size() == 0) {
-		setInit(iframe);
-	}
 	data = new std::vector < sData * >();
 	for (int i = 0; i < NUM_COLOR_TYPES; ++i) {
 		sdata = new sData();
@@ -25,7 +22,8 @@ Frame::Frame(IplImage * iframe)
 		*sdata = *bdata[i];
 		sdata->segmentated = cvCloneImage(bdata[i]->segmentated);
 	}
-	(*data)[0]->image_hsv = cvCreateImage(cvGetSize(iframe), 8, 1);
+	(*data)[0]->image_hsv = cvCreateImage(cvGetSize(frame), frame->depth,
+					      frame->nChannels);
 	(*data)[0]->blue_team->patches.clear();
 	for (unsigned int j = 0; j < bdata[0]->blue_team->patches.size(); ++j) {
 		pat = new Pattern();
@@ -36,19 +34,19 @@ Frame::Frame(IplImage * iframe)
 
 Frame::~Frame()
 {
-	delete frame;
-	delete(*data)[0]->image_hsv;
+	cvReleaseImage(&frame);
+	cvReleaseImage(&(*data)[0]->image_hsv);
 	for (unsigned int j = 0; j < bdata[0]->blue_team->patches.size(); ++j) {
 		delete(*data)[0]->blue_team->patches[j];
 	}
 	for (int i = 0; i < NUM_COLOR_TYPES; ++i) {
-		delete(*data)[i]->segmentated;
+		cvReleaseImage(&(*data)[i]->segmentated);
 		delete(*data)[i];
 	}
 	delete data;
 }
 
-int Frame::setInit(IplImage * img)
+int Frame::Init(IplImage * img)
 {
 	Team *blue_team;
 	Team *yellow_team;

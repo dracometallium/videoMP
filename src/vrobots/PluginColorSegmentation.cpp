@@ -39,9 +39,9 @@ int PluginColorSegmentation::process(Item * item)
 	for (int y = 0; y < hIn; y++) {
 		for (int x = 0; x < wIn; x++) {
 			// Get the HSV pixel components
-			uchar H = *(uchar *) (imOfsIn + y * rowSizeIn + x * 3 + 0);	// Hue
-			uchar S = *(uchar *) (imOfsIn + y * rowSizeIn + x * 3 + 1);	// Saturation
-			uchar V = *(uchar *) (imOfsIn + y * rowSizeIn + x * 3 + 2);	// Value (Brightness)
+			uchar H = imOfsIn[y * rowSizeIn + x * 3 + 0];	// Hue
+			uchar S = imOfsIn[y * rowSizeIn + x * 3 + 1];	// Saturation
+			uchar V = imOfsIn[y * rowSizeIn + x * 3 + 2];	// Value (Brightness)
 
 			// Determina de qué color es el píxel HSV.
 			unsigned c =

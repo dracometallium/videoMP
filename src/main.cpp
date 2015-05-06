@@ -173,17 +173,17 @@ int main()
 	ps1->addPlugin(new PluginCalibration());
 	ps1->addPlugin(new PluginColorConversions());
 	ps1->addPlugin(new PluginColorSegmentation(color));
-	//ps1->addPlugin(new PluginMorphology());
-	//ps1->addPlugin(new PluginDetectBalls());
-	//ps1->addPlugin(new PluginNetworking(2));
+	ps1->addPlugin(new PluginMorphology());
+	ps1->addPlugin(new PluginDetectBalls());
+	ps1->addPlugin(new PluginNetworking(2));
 
 	ps2->addPlugin(new PluginCalibration());
 	ps2->addPlugin(new PluginColorConversions());
 	ps2->addPlugin(new PluginColorSegmentation(color));
-	//ps2->addPlugin(new PluginMorphology());
+	ps2->addPlugin(new PluginMorphology());
 	//ps2->addPlugin(new PluginFindBlobs());
 	//ps2->addPlugin(new PluginFindSecondariesBlobs());
-	//ps2->addPlugin(new PluginNetworking(1));
+	ps2->addPlugin(new PluginNetworking(1));
 
 	is->addPluginStack(ps1);
 	is->addPluginStack(ps2);
