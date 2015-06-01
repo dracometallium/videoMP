@@ -29,13 +29,13 @@ int PluginDetectBalls::process(Item * item)
 	(*frame->data)[colorid]->result =
 	    cvLabel((*frame->data)[colorid]->segmentated,
 		    (*frame->data)[colorid]->labelImg,
-		    (*frame->data)[colorid]->blobs);
-	cvFilterByArea((*frame->data)[colorid]->blobs,
+		    *((*frame->data)[colorid]->blobs));
+	cvFilterByArea(*((*frame->data)[colorid]->blobs),
 		       (*frame->data)[colorid]->ball->area_min,
 		       (*frame->data)[colorid]->ball->area_max);
 
-	for (CvBlobs::iterator it = (*frame->data)[colorid]->blobs.begin();
-	     it != (*frame->data)[colorid]->blobs.end(); ++it) {
+	for (CvBlobs::iterator it = (*frame->data)[colorid]->blobs->begin();
+	     it != (*frame->data)[colorid]->blobs->end(); ++it) {
 		int width = MAX((*it).second->maxx - (*it).second->minx,
 				(*it).second->maxy - (*it).second->miny);
 		width = (int)width;	//*1.5;

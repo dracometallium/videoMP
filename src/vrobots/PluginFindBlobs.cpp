@@ -24,13 +24,11 @@ int PluginFindBlobs::process(Item * item)
 {
 	Frame *frame;
 	frame = (Frame *) item;
-	void * tmp;
-	tmp = &(*frame->data)[cBLUE]->blobs;
 	(*frame->data)[cBLUE]->result =
 	    cvLabel((*frame->data)[cBLUE]->segmentated,
 		    (*frame->data)[cBLUE]->labelImg,
-		    (*frame->data)[cBLUE]->blobs);
-	cvFilterByArea((*frame->data)[cBLUE]->blobs, 5, 50000);
+		    (*(*frame->data)[cBLUE]->blobs));
+	cvFilterByArea(*((*frame->data)[cBLUE]->blobs), 5, 50000);
 
 	return 0;
 }

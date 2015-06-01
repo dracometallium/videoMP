@@ -13,16 +13,20 @@ int FrameSlicer::optimalSize(int imgH, int imgW, int parts)
 	float bestRatio, ratio;
 	int col, line;
 	int nH, nW;
+	int i;
 	bestRatio = std::numeric_limits < float >::infinity();
-	for (col = 1; c < (parts - 1); col++) {
-		line = parts - col;
-		nH = imgH + ((line - (imgH % line)) % line);
-		nW = imgW + ((col - (imgW % col)) % col);
-		ratio = fabs(((nH / line) / (nW / col)) - 1);
-		if (ratio < bestRatio) {
-			c = col;
-			l = line;
-			bestRatio = ratio;
+	for (i = 1; i <= parts; i++) {
+		if ((parts % i) == 0) {
+			col = parts / i;
+			line = i;
+			nW = (imgW + col - 1) / col;
+			nH = (imgH + line - 1) / line;
+			ratio = fabs((nH / nW) - 1);
+			if (ratio < bestRatio) {
+				c = col;
+				l = line;
+				bestRatio = ratio;
+			}
 		}
 	}
 	return 0;
@@ -34,6 +38,7 @@ Item **FrameSlicer::slice(Item * item, int numParts)
 	int x, y, h, w;
 	Frame *frame;
 	Item **parts;
+	IplImage *tImg, *img;
 	frame = (Frame *) item;
 	imgH = frame->frame->height;
 	imgW = frame->frame->width;
@@ -43,6 +48,7 @@ Item **FrameSlicer::slice(Item * item, int numParts)
 		oldNumParts = numParts;
 	}
 	parts = new Item *[numParts];
+	img = frame->frame;
 	for (i = 0; i < numParts; i++) {
 		w = imgW / c;
 		h = imgH / l;
@@ -56,8 +62,13 @@ Item **FrameSlicer::slice(Item * item, int numParts)
 		w = (x + w > imgW) ? imgW - x : w;
 		h = (y + h > imgH) ? imgH - y : h;
 
-		parts[i] = new Frame(frame->frame);
-		((Frame *)parts[i])->initData();;
+		cvSetImageROI(img, cvRect(x, y, w, h));
+		tImg = cvCreateImage(cvSize(w, h), img->depth, img->nChannels);
+		cvCopy(tImg, img, NULL);
+		cvResetImageROI(img);
+
+		parts[i] = new Frame(tImg);
+		((Frame *) parts[i])->initData();;
 	}
 	return parts;
 }

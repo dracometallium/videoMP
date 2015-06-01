@@ -48,8 +48,8 @@ int PluginFindSecondariesBlobs::process(Item * item)
 	Frame *frame;
 	frame = (Frame *) item;
 	int colorId = (*frame->data)[0]->blue_team->team_colorid;
-	for (CvBlobs::iterator it = (*frame->data)[colorId]->blobs.begin();
-	     it != (*frame->data)[colorId]->blobs.end(); ++it) {
+	for (CvBlobs::iterator it = (*frame->data)[colorId]->blobs->begin();
+	     it != (*frame->data)[colorId]->blobs->end(); ++it) {
 		int width = MAX((*it).second->maxx - (*it).second->minx,
 				(*it).second->maxy - (*it).second->miny);
 		width = (int)width *3;
@@ -74,12 +74,12 @@ int PluginFindSecondariesBlobs::process(Item * item)
 			(*frame->data)[cid]->result =
 			    cvLabel((*frame->data)[cid]->segmentated,
 				    (*frame->data)[cid]->labelImg,
-				    (*frame->data)[cid]->blobs);
-			cvFilterByArea((*frame->data)[cid]->blobs, 10, 50000);
+				    *((*frame->data)[cid]->blobs));
+			cvFilterByArea(*((*frame->data)[cid]->blobs), 10, 50000);
 
 			for (CvBlobs::iterator
-			     it2 = (*frame->data)[cid]->blobs.begin();
-			     it2 != (*frame->data)[cid]->blobs.end(); ++it2) {
+			     it2 = (*frame->data)[cid]->blobs->begin();
+			     it2 != (*frame->data)[cid]->blobs->end(); ++it2) {
 				Marker *m = new Marker();
 				m->center.x =
 				    (int)(*it2).second->centroid.x + r.x;

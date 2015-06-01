@@ -51,13 +51,14 @@ void Frame::resetData()
 	for (int i = 0; i < NUM_COLOR_TYPES; ++i) {
 		cvSet((*data)[i]->segmentated, cvScalar(0));	// Clear image to black.
 		(*data)[i]->result = 0;
-		cvReleaseBlobs((*data)[i]->blobs);
-		cvReleaseTracks((*data)[i]->tracks);
+		cvReleaseBlobs(*((*data)[i]->blobs));
+		(*data)[i]->blobs = new CvBlobs();
+		cvReleaseTracks(*((*data)[i]->tracks));
+		(*data)[i]->tracks = new CvTracks();
 	}
 
 	for (unsigned int j = 0; j < (*data)[0]->blue_team->patches.size(); ++j)
 		(*data)[0]->blue_team->patches[j]->detected = false;
-
 }
 
 std::vector < sData * >*Frame::newData(IplImage * img)
@@ -221,8 +222,8 @@ std::vector < sData * >*Frame::newData(IplImage * img)
 						 NULL);
 		(*ndata)[i]->labelImg =
 		    cvCreateImage(imgSize, IPL_DEPTH_LABEL, 1);
-		cvReleaseBlobs((*ndata)[i]->blobs);
-		cvReleaseTracks((*ndata)[i]->tracks);
+		(*ndata)[i]->blobs = new CvBlobs();
+		(*ndata)[i]->tracks = new CvTracks();
 		(*ndata)[i]->blue_team = blue_team;
 		(*ndata)[i]->yellow_team = yellow_team;
 		(*ndata)[i]->ball = ball;

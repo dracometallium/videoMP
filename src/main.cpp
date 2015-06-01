@@ -30,18 +30,21 @@ int main()
 	PluginStack *ps1, *ps2;
 	RingStack *rs;
 	Slicer *sl;
-	
+
 	std::vector < sColor * >color;
 	sColor *c;
 	//Colors!!
 	//cBlack
 	c = new sColor();
 	c->hsv_min.hue = 0;
-	c->hsv_max.hue = 179;
+	c->hsv_max.hue = 255;
+	//c->hsv_max.hue = 179;
 	c->hsv_min.saturation = 0;
-	c->hsv_max.saturation = 255;
+	c->hsv_max.saturation = 170;
+	//c->hsv_max.saturation = 255;
 	c->hsv_min.value = 0;
-	c->hsv_max.value = 75;
+	c->hsv_max.value = 50;
+	//c->hsv_max.value = 75;
 	c->background = true;
 	color.push_back(c);
 
@@ -69,7 +72,7 @@ int main()
 	//cRED
 	c = new sColor();
 	c->hsv_min.hue = 0;
-	c->hsv_max.hue = 14;
+	c->hsv_max.hue = 0;
 	c->hsv_min.saturation = 28;
 	c->hsv_max.saturation = 255;
 	c->hsv_min.value = 76;
@@ -109,19 +112,22 @@ int main()
 
 	//cGREEN
 	c = new sColor();
-	//c->habilitar = true;
-	c->hsv_min.hue = 35;
-	c->hsv_max.hue = 73;
+	c->habilitar = true;
+	c->hsv_min.hue = 79 - 5;
+	c->hsv_max.hue = 79 + 5;
 	c->hsv_min.saturation = 28;
 	c->hsv_max.saturation = 255;
 	c->hsv_min.value = 76;
 	c->hsv_max.value = 255;
+	c->rgb.red = 0;
+	c->rgb.blue = 0;
+	c->rgb.green = 255;
 	color.push_back(c);
 
 	//cAQUA
 	c = new sColor();
-	c->hsv_min.hue = 74;
-	c->hsv_max.hue = 102;
+	c->hsv_min.hue = 2;
+	c->hsv_max.hue = 10;
 	c->hsv_min.saturation = 28;
 	c->hsv_max.saturation = 255;
 	c->hsv_min.value = 76;
@@ -131,8 +137,8 @@ int main()
 	//cBLUE
 	c = new sColor();
 	//c->habilitar = true;
-	c->hsv_min.hue = 103;
-	c->hsv_max.hue = 127;
+	c->hsv_min.hue = 102 - 10;
+	c->hsv_max.hue = 102 + 10;
 	c->hsv_min.saturation = 28;
 	c->hsv_max.saturation = 255;
 	c->hsv_min.value = 76;
@@ -144,8 +150,8 @@ int main()
 
 	//cPURPLE
 	c = new sColor();
-	c->hsv_min.hue = 128;
-	c->hsv_max.hue = 149;
+	c->hsv_min.hue = 110;
+	c->hsv_max.hue = 124;
 	c->hsv_min.saturation = 28;
 	c->hsv_max.saturation = 255;
 	c->hsv_min.value = 76;
@@ -154,30 +160,29 @@ int main()
 
 	//cPINK
 	c = new sColor();
-	c->hsv_min.hue = 150;
-	c->hsv_max.hue = 175;
+	c->hsv_min.hue = 145;
+	c->hsv_max.hue = 165;
 	c->hsv_min.saturation = 28;
 	c->hsv_max.saturation = 255;
 	c->hsv_min.value = 76;
 	c->hsv_max.value = 255;
 	color.push_back(c);
 
-
 	rs = new RingStack(60);
-	input = new CaptureFromFile(rs, "../robots.avi");
+	input = new CaptureFromFile(rs, "../robots.mkv");
 	sl = new FrameSlicer();
 	is = new ItemSwitch(2, 2, sl, rs);
 	ps1 = new PluginStack();
 	ps2 = new PluginStack();
 
-	ps1->addPlugin(new PluginCalibration());
+//	ps1->addPlugin(new PluginCalibration());
 	ps1->addPlugin(new PluginColorConversions());
 	ps1->addPlugin(new PluginColorSegmentation(color));
 	ps1->addPlugin(new PluginMorphology());
 	ps1->addPlugin(new PluginDetectBalls());
 	ps1->addPlugin(new PluginNetworking(2));
 
-	ps2->addPlugin(new PluginCalibration());
+//	ps2->addPlugin(new PluginCalibration());
 	ps2->addPlugin(new PluginColorConversions());
 	ps2->addPlugin(new PluginColorSegmentation(color));
 	ps2->addPlugin(new PluginMorphology());

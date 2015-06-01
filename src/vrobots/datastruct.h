@@ -28,27 +28,27 @@
 #include "ball.h"
 #include "homography.h"
 
-
 using namespace cvb;
 
 #define DEVICES 4
 
-
-enum colorIndex {cBLACK=0, cWHITE, cGREY, cRED, cBROWN, cORANGE, cYELLOW, cGREEN, cAQUA, cBLUE, cPURPLE, cPINK, NUM_COLOR_TYPES};
+enum colorIndex { cBLACK =
+	    0, cWHITE, cGREY, cRED, cBROWN, cORANGE, cYELLOW, cGREEN, cAQUA,
+	    cBLUE, cPURPLE, cPINK, NUM_COLOR_TYPES };
 
 //#pragma pack(8)
 
 struct sData {
-public:
-	bool enable; //=false; //procesar este color a segmentar
+ public:
+	bool enable;		//=false; //procesar este color a segmentar
 	//int color_index; //índice de la tabla de colores.
-	IplImage* image_hsv;
-	IplImage* segmentated;
-	IplConvKernel* morphKernel;
-	IplImage* labelImg;
+	IplImage *image_hsv;
+	IplImage *segmentated;
+	IplConvKernel *morphKernel;
+	IplImage *labelImg;
 	unsigned int result;
-	CvBlobs blobs;
-	CvTracks tracks;
+	CvBlobs *blobs;
+	CvTracks *tracks;
 	//ROI área de procesamiento
 	Team *blue_team;
 	Team *yellow_team;
@@ -57,50 +57,51 @@ public:
 	int n;
 	long long frameNumber;
 
-	sData() {result=0; enable=false;}
-} __attribute__ ((aligned));
+	 sData() {
+		result = 0;
+		enable = false;
+}} __attribute__ ((aligned));
 
 typedef CvPoint Pixel;
 
-struct sRGB{
-public:
+struct sRGB {
+ public:
 	int blue;
 	int green;
 	int red;
 };
 
-struct sHSV{
-public:
+struct sHSV {
+ public:
 	int hue;
 	int saturation;
 	int value;
 };
 
 struct sColor {
-public:
+ public:
 	std::string name;
 	sHSV hsv_min;
 	sHSV hsv_max;
 	sRGB rgb;
-	bool mostrar; //muestra el color detectado durante el proceso de ajuste del color.
-	bool habilitar; //lo habilita a buscarlo en el proceso de búsqueda de colores, para detectar el parche.
-	bool background; //TODO: no tiene uso actualmente, identifica al color como background.
+	bool mostrar;		//muestra el color detectado durante el proceso de ajuste del color.
+	bool habilitar;		//lo habilita a buscarlo en el proceso de búsqueda de colores, para detectar el parche.
+	bool background;	//TODO: no tiene uso actualmente, identifica al color como background.
 
-	sColor() {
-		hsv_min.hue=0;
-		hsv_min.saturation=0;
-		hsv_min.value=0;
-		hsv_max.hue=0;
-		hsv_max.saturation=0;
-		hsv_max.value=0;
-		mostrar=habilitar=background=false;}
-};
+	 sColor() {
+		hsv_min.hue = 0;
+		hsv_min.saturation = 0;
+		hsv_min.value = 0;
+		hsv_max.hue = 0;
+		hsv_max.saturation = 0;
+		hsv_max.value = 0;
+		mostrar = habilitar = background = false;
+}};
 
 struct sResolution {
-public:
+ public:
 	int width;
 	int height;
 };
 
-
-#endif /* DATASTRUCT_H_ */
+#endif				/* DATASTRUCT_H_ */
