@@ -6,7 +6,7 @@
 class Frame:public Item {
  public:
 	Frame(IplImage * iframe);
-	~Frame();
+	virtual ~ Frame();
 	IplImage *frame;
 	static std::vector < std::vector < sData * >*>dpool;
 	static std::vector < sData * >*newData(IplImage * img);

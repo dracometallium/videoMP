@@ -4,7 +4,7 @@
 class Item {
  public:
 	Item();
-	~Item();
+	virtual ~ Item();
 	double time;
 };
 

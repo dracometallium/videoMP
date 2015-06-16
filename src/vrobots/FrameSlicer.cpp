@@ -53,11 +53,11 @@ Item **FrameSlicer::slice(Item * item, int numParts)
 		w = imgW / c;
 		h = imgH / l;
 		x = (i % c) * w - BORDER;
-		y = (i / l) * l - BORDER;
+		y = (i / c) * h - BORDER;
 		x = (x < 0) ? 0 : x;
 		y = (y < 0) ? 0 : y;
 		w = w + 2 * BORDER;
-		y = y + 2 * BORDER;
+		h = h + 2 * BORDER;
 
 		w = (x + w > imgW) ? imgW - x : w;
 		h = (y + h > imgH) ? imgH - y : h;
@@ -70,5 +70,5 @@ Item **FrameSlicer::slice(Item * item, int numParts)
 		parts[i] = new Frame(tImg);
 		((Frame *) parts[i])->initData();;
 	}
-	return parts;
+	return &(parts[0]);
 }
