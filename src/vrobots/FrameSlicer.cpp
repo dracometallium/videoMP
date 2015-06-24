@@ -35,7 +35,7 @@ int FrameSlicer::optimalSize(int imgH, int imgW, int parts)
 Item **FrameSlicer::slice(Item * item, int numParts)
 {
 	int imgH, imgW, i;
-	int x, y, h, w;
+	int x, y, h, w, zw, zh;
 	Frame *frame;
 	Item **parts;
 	IplImage *tImg, *img;
@@ -59,13 +59,18 @@ Item **FrameSlicer::slice(Item * item, int numParts)
 		w = w + 2 * BORDER;
 		h = h + 2 * BORDER;
 
-		w = (x + w > imgW) ? imgW - x : w;
-		h = (y + h > imgH) ? imgH - y : h;
+		zw = (x + w > imgW) ? imgW - x : w;
+		zh = (y + h > imgH) ? imgH - y : h;
 
-		cvSetImageROI(img, cvRect(x, y, w, h));
+	//	printf("x: %d y: %d w: %d h: %d\n", x, y, w, h);
+		cvSetImageROI(img, cvRect(x, y, zw, zh));
 		tImg = cvCreateImage(cvSize(w, h), img->depth, img->nChannels);
-		cvCopy(tImg, img, NULL);
+		cvSet(tImg, cvScalar(0));	// Clear image to black.
+		cvSetImageROI(tImg, cvRect(0, 0, zw, zh));
+		cvCopy(img, tImg, NULL);
+	//	tImg = cvCloneImage(img);
 		cvResetImageROI(img);
+		cvResetImageROI(tImg);
 
 		parts[i] = new Frame(tImg);
 		((Frame *) parts[i])->initData();;

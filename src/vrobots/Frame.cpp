@@ -184,10 +184,10 @@ std::vector < sData * >*Frame::newData(IplImage * img)
 
 	// dimensions
 	p1.x = 0;
-	p1.y = 240;
-	p2.x = 320;
-	p2.y = 240;
-	p3.x = 320;
+	p1.y = img->height - 1;
+	p2.x = img->width - 1;
+	p3.y = img->height - 1;
+	p2.x = img->width - 1;
 	p3.y = 0;
 	p4.x = 0;
 	p4.y = 0;
