@@ -40,15 +40,15 @@ Item **FrameSlicer::slice(Item * item, int numParts)
 	Item **parts;
 	IplImage *tImg, *img;
 	frame = (Frame *) item;
-	imgH = frame->frame->height;
-	imgW = frame->frame->width;
+	img = cvCloneImage(frame->frame);
+	imgH = img->height;
+	imgW = img->width;
 #pragma omp critical
 	if (oldNumParts != numParts) {
 		optimalSize(imgH, imgW, numParts);
 		oldNumParts = numParts;
 	}
 	parts = new Item *[numParts];
-	img = frame->frame;
 	for (i = 0; i < numParts; i++) {
 		w = imgW / c;
 		h = imgH / l;
@@ -62,18 +62,17 @@ Item **FrameSlicer::slice(Item * item, int numParts)
 		zw = (x + w > imgW) ? imgW - x : w;
 		zh = (y + h > imgH) ? imgH - y : h;
 
-	//	printf("x: %d y: %d w: %d h: %d\n", x, y, w, h);
 		cvSetImageROI(img, cvRect(x, y, zw, zh));
 		tImg = cvCreateImage(cvSize(w, h), img->depth, img->nChannels);
 		cvSet(tImg, cvScalar(0));	// Clear image to black.
 		cvSetImageROI(tImg, cvRect(0, 0, zw, zh));
 		cvCopy(img, tImg, NULL);
-	//	tImg = cvCloneImage(img);
-		cvResetImageROI(img);
 		cvResetImageROI(tImg);
+		cvResetImageROI(img);
 
 		parts[i] = new Frame(tImg);
 		((Frame *) parts[i])->initData();;
 	}
+	cvReleaseImage(&img);
 	return &(parts[0]);
 }

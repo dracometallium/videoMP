@@ -174,20 +174,26 @@ std::vector < sData * >*Frame::newData(IplImage * img)
 
 	//markers of a patch
 	blue_team->patches[4]->markers.push_back(new Marker());
-	blue_team->patches[4]->markers[0]->colorid = cPINK;
+	blue_team->patches[4]->markers[0]->colorid = cPURPLE;
 	blue_team->patches[4]->markers.push_back(new Marker());
-	blue_team->patches[4]->markers[1]->colorid = cGREEN;
+	blue_team->patches[4]->markers[1]->colorid = cPINK;
 	blue_team->patches[4]->markers.push_back(new Marker());
-	blue_team->patches[4]->markers[2]->colorid = cPINK;
+	blue_team->patches[4]->markers[2]->colorid = cGREEN;
 	blue_team->patches[4]->markers.push_back(new Marker());
-	blue_team->patches[4]->markers[3]->colorid = cPINK;
+	blue_team->patches[4]->markers[3]->colorid = cGREEN;
+
+	for (unsigned int j = 0; j < blue_team->patches.size(); ++j) {
+		blue_team->patches[j]->field_pos = cvPoint(0, 0);
+		blue_team->patches[j]->orientation = 0;
+		blue_team->patches[j]->center = cvPoint(0, 0);
+	}
 
 	// dimensions
 	p1.x = 0;
-	p1.y = img->height - 1;
-	p2.x = img->width - 1;
-	p3.y = img->height - 1;
-	p2.x = img->width - 1;
+	p1.y = img->height;
+	p2.x = img->width;
+	p3.y = img->height;
+	p2.x = img->width;
 	p3.y = 0;
 	p4.x = 0;
 	p4.y = 0;
