@@ -39,15 +39,16 @@ int ItemSwitch::run()
 				item = ringStack->get();
 			}
 			if (item != NULL) {
-				p = slicer->slice(item, NPARTS);
-#pragma omp parallel num_threads(NPARTS) private(i, t)
-				{
-					t = omp_get_thread_num();
-#pragma omp parallel for num_threads(numPStaks)
-					for (i = 0; i < numPStaks; i++) {
+#pragma omp parallel for num_threads(numPStaks) private(i, p)
+				for (i = 0; i < numPStaks; i++) {
+					p = slicer->slice(item, NPARTS);
+#pragma omp parallel num_threads(NPARTS) private(t)
+					{
+						t = omp_get_thread_num();
 						pluginStack[i]->process(p[t]);
+						delete p[t];
 					}
-					delete p[t];
+					delete p;
 				}
 #pragma omp critical
 				{

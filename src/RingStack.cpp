@@ -27,6 +27,7 @@ Item *RingStack::get()
 	item = NULL;
 	if (numItems) {
 		item = items[top];
+		items[top] = NULL;
 		numItems--;
 		top = (top - 1 + SIZE) % SIZE;
 	}
