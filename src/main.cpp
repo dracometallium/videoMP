@@ -23,13 +23,22 @@
 #include "vrobots/PluginMorphology.hpp"
 #include "vrobots/PluginNetworking.hpp"
 
-int main()
+int main(int carg, char **varg)
 {
 	Input *input;
 	ItemSwitch *is;
 	PluginStack *ps1, *ps2;
 	RingStack *rs;
 	Slicer *sl;
+	int NTHREADS, NPARTS;
+
+	if (carg > 2) {
+		NTHREADS = atoi(varg[1]);
+		NPARTS = atoi(varg[2]);
+	} else {
+		NTHREADS = 2;
+		NPARTS = 2;
+	}
 
 	std::vector < sColor * >color;
 	sColor *c;
@@ -171,18 +180,18 @@ int main()
 	rs = new RingStack(60);
 	input = new CaptureFromFile(rs, "../robots.mkv");
 	sl = new FrameSlicer();
-	is = new ItemSwitch(2, 2, sl, rs);
+	is = new ItemSwitch(NTHREADS, NPARTS, sl, rs);
 	ps1 = new PluginStack();
 	ps2 = new PluginStack();
 
-//	ps1->addPlugin(new PluginCalibration());
+//      ps1->addPlugin(new PluginCalibration());
 	ps1->addPlugin(new PluginColorConversions());
 	ps1->addPlugin(new PluginColorSegmentation(color));
 	ps1->addPlugin(new PluginMorphology());
 	ps1->addPlugin(new PluginDetectBalls());
 	ps1->addPlugin(new PluginNetworking(2));
 
-//	ps2->addPlugin(new PluginCalibration());
+//      ps2->addPlugin(new PluginCalibration());
 	ps2->addPlugin(new PluginColorConversions());
 	ps2->addPlugin(new PluginColorSegmentation(color));
 	ps2->addPlugin(new PluginMorphology());
@@ -215,12 +224,12 @@ int main()
 		}
 	}
 
-	std::cout << "Input items:\t " << input->numItems << std::endl;
-	std::cout << "Process items:\t " << is->numItems << std::endl;
-	std::cout << "Loss:\t\t " << 100 -
-	    ((is->numItems * 100.0) / input->numItems) << "%" << std::endl;
-	std::cout << "Max Wait time:\t " << is->maxItemWait << std::endl;
-	std::cout << "Fresh Items:\t " << is->freshItems << std::endl;
+	std::cout << NTHREADS << " " << NPARTS << " "
+	    << input->numItems << " "
+	    << is->numItems << " "
+	    << 1 -
+	    ((is->numItems * 1.0) / input->numItems) << " "
+	    << is->maxItemWait << " " << is->freshItems << std::endl;
 	delete input;
 	delete is;
 	delete ps1;
