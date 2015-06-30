@@ -38,6 +38,7 @@ CaptureFromFile::CaptureFromFile(RingStack * rs, std::string _filename)
 	total_frames = (int)capture.get(CV_CAP_PROP_FRAME_COUNT);
 	frame_height = (int)capture.get(CV_CAP_PROP_FRAME_HEIGHT);
 	frame_width = (int)capture.get(CV_CAP_PROP_FRAME_WIDTH);
+	lastTime = 0;
 }
 
 Item *CaptureFromFile::generate()
@@ -45,8 +46,14 @@ Item *CaptureFromFile::generate()
 	Frame *nframe;
 	IplImage tIpl;
 	IplImage *ipl;
+	double tTime;
 	// TODO: fps should be changeable to video reproduction speed
-	usleep(1000000 / fps);
+	tTime = omp_get_wtime();
+	while (tTime < (lastTime + 1.0 / fps)) {
+		usleep(10000 / fps);
+		tTime = omp_get_wtime();
+	}
+	lastTime = tTime;
 
 	//cvCloneImage turns a Mat to a IplImage
 	capture >> tframe;	// get a new frame from camera.

@@ -178,7 +178,7 @@ int main(int carg, char **varg)
 	color.push_back(c);
 
 	rs = new RingStack(60);
-	input = new CaptureFromFile(rs, "../robots.mkv");
+	input = new CaptureFromFile(rs, "../robots.avi");
 	sl = new FrameSlicer();
 	is = new ItemSwitch(NTHREADS, NPARTS, sl, rs);
 	ps1 = new PluginStack();

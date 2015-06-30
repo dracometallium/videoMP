@@ -52,6 +52,7 @@ class CaptureFromFile:public Input {
 	int frame_counter;
  private:
 	void iplimage_from_cvmat(CvMat input, IplImage * output);
+	double lastTime;
 };
 
 #endif
