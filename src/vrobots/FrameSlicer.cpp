@@ -43,10 +43,12 @@ Item **FrameSlicer::slice(Item * item, int numParts)
 	img = cvCloneImage(frame->frame);
 	imgH = img->height;
 	imgW = img->width;
-#pragma omp critical
 	if (oldNumParts != numParts) {
-		optimalSize(imgH, imgW, numParts);
-		oldNumParts = numParts;
+#pragma omp critical
+		if (oldNumParts != numParts) {
+			optimalSize(imgH, imgW, numParts);
+			oldNumParts = numParts;
+		}
 	}
 	parts = new Item *[numParts];
 	for (i = 0; i < numParts; i++) {

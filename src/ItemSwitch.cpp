@@ -26,17 +26,23 @@ int ItemSwitch::addPluginStack(PluginStack * ps)
 
 int ItemSwitch::run()
 {
+	int iNumItems, iFreshItems;
+	iNumItems = 0;
+	iFreshItems = 0;
 	running = 1;
-#pragma omp parallel num_threads(NTHREADS)
+#pragma omp parallel num_threads(NTHREADS) reduction(+:iNumItems,iFreshItems)
 	{
 		Item *item;
 		Item **p;
 		int i, t;
 		double dtime;
 		while (running) {
+			item = NULL;
+			if (ringStack->getSize() > 0) {
 #pragma omp critical (RingStack)
-			{
-				item = ringStack->get();
+				{
+					item = ringStack->get();
+				}
 			}
 			if (item != NULL) {
 #pragma omp parallel for num_threads(numPStaks) private(i, p)
@@ -50,13 +56,13 @@ int ItemSwitch::run()
 					}
 					delete p;
 				}
+				dtime = omp_get_wtime() - item->time;
+				iNumItems++;
+				if (dtime <= maxThreshold) {
+					iFreshItems++;
+				}
+				if (maxItemWait < dtime) {
 #pragma omp critical
-				{
-					numItems++;
-					dtime = omp_get_wtime() - item->time;
-					if (dtime <= maxThreshold) {
-						freshItems++;
-					}
 					if (maxItemWait < dtime) {
 						maxItemWait = dtime;
 					}
@@ -65,6 +71,8 @@ int ItemSwitch::run()
 			}
 		}
 	}
+	numItems = iNumItems;
+	freshItems = iFreshItems;
 	return 0;
 }
 
