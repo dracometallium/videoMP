@@ -31,10 +31,14 @@ int main(int carg, char **varg)
 	RingStack *rs;
 	Slicer *sl;
 	int NTHREADS, NPARTS;
+	char *file = "../robots.avi";
 
 	if (carg > 2) {
 		NTHREADS = atoi(varg[1]);
 		NPARTS = atoi(varg[2]);
+		if(carg > 3){
+			file = varg[3];
+		}
 	} else {
 		NTHREADS = 2;
 		NPARTS = 2;
@@ -178,7 +182,7 @@ int main(int carg, char **varg)
 	color.push_back(c);
 
 	rs = new RingStack(60);
-	input = new CaptureFromFile(rs, "../robots.avi");
+	input = new CaptureFromFile(rs, file);
 	sl = new FrameSlicer();
 	is = new ItemSwitch(NTHREADS, NPARTS, sl, rs);
 	ps1 = new PluginStack();
