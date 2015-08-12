@@ -9,9 +9,8 @@ ItemSwitch::ItemSwitch(int numThreads, int nparts, Slicer * s, RingStack * rs)
 	running = 0;
 	numPStaks = 0;
 	numItems = 0;
-	maxThreshold = 0;
+	maxThreshold = 5;
 	maxItemWait = 0;
-	freshItems = 0;
 	if (!omp_get_nested()) {
 		omp_set_nested(1);
 	}
@@ -26,41 +25,42 @@ int ItemSwitch::addPluginStack(PluginStack * ps)
 
 int ItemSwitch::run()
 {
-	int iNumItems, iFreshItems;
-	iNumItems = 0;
-	iFreshItems = 0;
+	int i, t;
+	double dtime;
 	running = 1;
-#pragma omp parallel num_threads(NTHREADS) reduction(+:iNumItems,iFreshItems)
-	{
-		Item *item;
-		Item **p;
-		int i, t;
-		double dtime;
-		while (running) {
-			item = NULL;
-			if (ringStack->getSize() > 0) {
+	Item *item;
+	Item **p;
+	dtime = 0;
+#pragma omp parallel num_threads(NTHREADS + 1)
+#pragma omp single
+	while (running) {
+		item = NULL;
+		if (ringStack->getSize() > 0) {
 #pragma omp critical (RingStack)
-				{
-					item = ringStack->get();
-				}
+			{
+				item = ringStack->get();
 			}
-			if (item != NULL) {
-#pragma omp parallel for num_threads(numPStaks) private(i, p)
-				for (i = 0; i < numPStaks; i++) {
-					p = slicer->slice(item, NPARTS);
-#pragma omp parallel num_threads(NPARTS) private(t)
+		}
+		if (item != NULL) {
+#pragma omp task private(p, t) firstprivate(item)
+			if (running && (omp_get_wtime() - item->time) <
+			    maxThreshold) {
+				p = slicer->slice(item, NPARTS);
+				for (t = 0; t < NPARTS; t++) {
+#pragma omp task private(i) firstprivate(t)
 					{
-						t = omp_get_thread_num();
-						pluginStack[i]->process(p[t]);
+						for (i = 0; i < numPStaks; i++) {
+							pluginStack[i]->process
+							    (p[t]);
+						}
 						delete p[t];
 					}
-					delete p;
 				}
+#pragma omp taskwait
+				delete p;
 				dtime = omp_get_wtime() - item->time;
-				iNumItems++;
-				if (dtime <= maxThreshold) {
-					iFreshItems++;
-				}
+#pragma omp atomic
+				numItems++;
 				if (maxItemWait < dtime) {
 #pragma omp critical
 					if (maxItemWait < dtime) {
@@ -71,8 +71,6 @@ int ItemSwitch::run()
 			}
 		}
 	}
-	numItems = iNumItems;
-	freshItems = iFreshItems;
 	return 0;
 }
 

@@ -19,7 +19,6 @@ class ItemSwitch {
 	/* Debug methods */
 	int numItems;
 	double maxItemWait;
-	int freshItems;
 	int setThreshold(double t);
 
  private:

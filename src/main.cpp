@@ -31,13 +31,18 @@ int main(int carg, char **varg)
 	RingStack *rs;
 	Slicer *sl;
 	int NTHREADS, NPARTS;
+	double maxThreshold;
 	char *file = "../robots.avi";
+	maxThreshold = 5.0;
 
 	if (carg > 2) {
 		NTHREADS = atoi(varg[1]);
 		NPARTS = atoi(varg[2]);
 		if(carg > 3){
 			file = varg[3];
+		}
+		if(carg > 4){
+			maxThreshold = atoi(varg[4])/1000.0;
 		}
 	} else {
 		NTHREADS = 2;
@@ -205,7 +210,7 @@ int main(int carg, char **varg)
 
 	is->addPluginStack(ps1);
 	is->addPluginStack(ps2);
-	is->setThreshold(0.06);
+	is->setThreshold(maxThreshold);
 
 #pragma omp parallel sections num_threads(3)
 	{
@@ -231,9 +236,7 @@ int main(int carg, char **varg)
 	std::cout << NTHREADS << " " << NPARTS << " "
 	    << input->numItems << " "
 	    << is->numItems << " "
-	    << 1 -
-	    ((is->numItems * 1.0) / input->numItems) << " "
-	    << is->maxItemWait << " " << is->freshItems << std::endl;
+	    << is->maxItemWait << std::endl;
 	delete input;
 	delete is;
 	delete ps1;
