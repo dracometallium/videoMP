@@ -11,6 +11,7 @@ ItemSwitch::ItemSwitch(int numThreads, int nparts, Slicer * s, RingStack * rs)
 	numItems = 0;
 	maxThreshold = 5;
 	maxItemWait = 0;
+	totalWait = 0;
 	if (!omp_get_nested()) {
 		omp_set_nested(1);
 	}
@@ -60,7 +61,7 @@ int ItemSwitch::run()
 				delete p;
 				dtime = omp_get_wtime() - item->time;
 #pragma omp atomic
-				numItems++;
+				totalWait = totalWait + dtime;
 				if (maxItemWait < dtime) {
 #pragma omp critical
 					if (maxItemWait < dtime) {
@@ -68,6 +69,8 @@ int ItemSwitch::run()
 					}
 				}
 				delete item;
+#pragma omp atomic
+				numItems++;
 			}
 		}
 	}
