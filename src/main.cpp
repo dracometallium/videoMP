@@ -236,7 +236,7 @@ int main(int carg, char **varg)
 	std::cout << NTHREADS << " " << NPARTS << " "
 	    << input->numItems << " "
 	    << is->numItems << " "
-	    << is->maxItemWait " "
+	    << is->maxItemWait << " "
 	    << is->totalWait << std::endl;
 	delete input;
 	delete is;
