@@ -31,11 +31,12 @@ int ItemSwitch::run()
 	Item *item;
 	Item **p;
 	dtime = 0;
+	int cantThreads = 0;
 #pragma omp parallel num_threads(NTHREADS + 1)
 #pragma omp single
 	while (running) {
 		item = NULL;
-		if (ringStack->getSize() > 0) {
+		if (ringStack->getSize() > 0 && !(cantThreads > NTHREADS)) {
 #pragma omp critical (RingStack)
 			{
 				item = ringStack->get();
@@ -45,15 +46,21 @@ int ItemSwitch::run()
 #pragma omp task private(p, t) firstprivate(item)
 			if (running && (omp_get_wtime() - item->time) <
 			    maxThreshold) {
+#pragma omp atomic
+				cantThreads++;
 				p = slicer->slice(item, NPARTS);
 				for (t = 0; t < NPARTS; t++) {
 #pragma omp task private(i) firstprivate(t)
 					{
+#pragma omp atomic
+				cantThreads++;
 						for (i = 0; i < numPStaks; i++) {
 							pluginStack[i]->process
 							    (p[t]);
 						}
 						delete p[t];
+#pragma omp atomic
+				cantThreads--;
 					}
 				}
 #pragma omp taskwait
@@ -68,6 +75,8 @@ int ItemSwitch::run()
 					}
 				}
 				delete item;
+#pragma omp atomic
+				cantThreads--;
 			}
 		}
 	}
