@@ -43,13 +43,13 @@ int ItemSwitch::run()
 			}
 		}
 		if (item != NULL) {
-#pragma omp task private(t) firstprivate(item) if((threads = (threads - 1)) < 0)
+#pragma omp task private(t) firstprivate(item) if((threads = (threads - 1)) > 0)
 			if (running && (omp_get_wtime() - item->time) <
 			    maxThreshold) {
 				Item **p;
 				p = slicer->slice(item, NPARTS);
 				for (t = 0; t < NPARTS; t++) {
-#pragma omp task private(i) firstprivate(t) if((threads = (threads - 1)) < 0)
+#pragma omp task private(i) firstprivate(t) if((threads = (threads - 1)) > 0)
 					{
 						for (i = 0; i < numPStaks; i++) {
 							pluginStack[i]->process
