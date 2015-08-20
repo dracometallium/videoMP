@@ -33,7 +33,7 @@ int main(int carg, char **varg)
 	int NTHREADS, NPARTS;
 	double maxThreshold;
 	char *file = "../robots.avi";
-	maxThreshold = 5.0;
+	maxThreshold = 0.5;
 
 	if (carg > 2) {
 		NTHREADS = atoi(varg[1]);

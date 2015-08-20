@@ -29,41 +29,45 @@ int ItemSwitch::run()
 	double dtime;
 	running = 1;
 	Item *item;
-	Item **p;
 	dtime = 0;
-	int cantThreads = 0;
+	int threads = NTHREADS;
 #pragma omp parallel num_threads(NTHREADS + 1)
 #pragma omp single
 	while (running) {
 		item = NULL;
-		if (ringStack->getSize() > 0 && !(cantThreads > NTHREADS)) {
+		if (ringStack->getSize() > 0 && (threads > 0)) {
 #pragma omp critical (RingStack)
 			{
 				item = ringStack->get();
 			}
 		}
 		if (item != NULL) {
-#pragma omp task private(p, t) firstprivate(item)
+#pragma omp task private(t) firstprivate(item) if((threads = (threads - 1)) < 0)
 			if (running && (omp_get_wtime() - item->time) <
 			    maxThreshold) {
-#pragma omp atomic
-				cantThreads++;
+				Item **p;
 				p = slicer->slice(item, NPARTS);
 				for (t = 0; t < NPARTS; t++) {
-#pragma omp task private(i) firstprivate(t)
+#pragma omp task private(i) firstprivate(t) if((threads = (threads - 1)) < 0)
 					{
-#pragma omp atomic
-				cantThreads++;
 						for (i = 0; i < numPStaks; i++) {
 							pluginStack[i]->process
 							    (p[t]);
 						}
 						delete p[t];
 #pragma omp atomic
-				cantThreads--;
+						threads++;
 					}
 				}
+#pragma omp atomic
+				threads++;
+	/*
+	 * There is no point in taking away a thread if it is just going to
+	 * wait.
+	 */
 #pragma omp taskwait
+#pragma omp atomic
+				threads--;
 				delete p;
 				dtime = omp_get_wtime() - item->time;
 #pragma omp atomic
@@ -76,7 +80,7 @@ int ItemSwitch::run()
 				}
 				delete item;
 #pragma omp atomic
-				cantThreads--;
+				threads++;
 			}
 		}
 	}
