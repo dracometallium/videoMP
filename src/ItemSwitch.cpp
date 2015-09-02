@@ -29,6 +29,7 @@ int ItemSwitch::run()
 	int i, t;
 	running = 1;
 	Item *item;
+	Item **p;
 	int threads = NTHREADS;
 #pragma omp parallel num_threads(NTHREADS + 1)
 #pragma omp single
@@ -41,13 +42,12 @@ int ItemSwitch::run()
 			}
 		}
 		if (item != NULL) {
-#pragma omp task private(t) firstprivate(item) if(threads = (threads - 1), true)
+		p = slicer->slice(item, NPARTS);
+#pragma omp task private(t) firstprivate(p, item) if(threads = (threads - 1), true)
 			if (running && (omp_get_wtime() - item->time) <
 			    maxThreshold) {
-				Item **p;
 				bool tooLate = false;
 				double dtime;
-				p = slicer->slice(item, NPARTS);
 				for (t = 0; t < NPARTS; t++) {
 #pragma omp task private(i) firstprivate(t) if((threads = (threads - 1)) > 0)
 					{
