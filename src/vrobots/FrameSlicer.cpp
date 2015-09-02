@@ -40,7 +40,7 @@ Item **FrameSlicer::slice(Item * item, int numParts)
 	Item **parts;
 	IplImage *tImg, *img;
 	frame = (Frame *) item;
-	img = cvCloneImage(frame->frame);
+	img = frame->frame;
 	imgH = img->height;
 	imgW = img->width;
 	if (oldNumParts != numParts) {
@@ -75,6 +75,5 @@ Item **FrameSlicer::slice(Item * item, int numParts)
 		parts[i] = new Frame(tImg);
 		((Frame *) parts[i])->initData();;
 	}
-	cvReleaseImage(&img);
 	return &(parts[0]);
 }
