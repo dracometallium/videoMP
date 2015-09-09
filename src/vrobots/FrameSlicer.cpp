@@ -19,8 +19,8 @@ int FrameSlicer::optimalSize(int imgH, int imgW, int parts)
 		if ((parts % i) == 0) {
 			col = parts / i;
 			line = i;
-			nW = (imgW + col - 1) / col;
-			nH = (imgH + line - 1) / line;
+			nH = imgH / line + BORDER;
+			nW = imgW / col + BORDER;
 			ratio = fabs((nH / nW) - 1);
 			if (ratio < bestRatio) {
 				c = col;
@@ -35,7 +35,7 @@ int FrameSlicer::optimalSize(int imgH, int imgW, int parts)
 Item **FrameSlicer::slice(Item * item, int numParts)
 {
 	int imgH, imgW, i;
-	int x, y, h, w, zw, zh;
+	int x, y, xe, ye, w, h;
 	Frame *frame;
 	Item **parts;
 	IplImage *tImg, *img;
@@ -52,25 +52,20 @@ Item **FrameSlicer::slice(Item * item, int numParts)
 	}
 	parts = new Item *[numParts];
 	for (i = 0; i < numParts; i++) {
-		w = (imgW + c - 1) / c;
-		h = (imgH + l - 1) / l;
-		x = (i % c) * w - BORDER;
-		y = (i / c) * h - BORDER;
-		x = (x < 0) ? 0 : x;
-		y = (y < 0) ? 0 : y;
-		w = w + 2 * BORDER;
-		h = h + 2 * BORDER;
+		w = imgW / c + BORDER;
+		h = imgH / l + BORDER;
+		x = (i % c) * (w - BORDER);
+		y = (i / c) * (h - BORDER);
 
-		zw = (x + w > imgW) ? imgW - x : w;
-		zh = (y + h > imgH) ? imgH - y : h;
+		w = (x + w > imgW) ? imgW - x : w;
+		h = (y + h > imgH) ? imgH - y : h;
 
-		cvSetImageROI(img, cvRect(x, y, zw, zh));
-		tImg = cvCreateImage(cvSize(w, h), img->depth, img->nChannels);
-		cvSet(tImg, cvScalar(0));	// Clear image to black.
-		cvSetImageROI(tImg, cvRect(0, 0, zw, zh));
-		cvCopy(img, tImg, NULL);
-		cvResetImageROI(tImg);
-		cvResetImageROI(img);
+		//printf("%d:%d,%d:%d,%d:%dx%d\n", i, i % c, i / c, x, y, w, h);
+
+		tImg = cvCreateImageHeader(cvSize(imgW, imgH), img->depth,
+					   img->nChannels);
+		tImg->imageData = img->imageData;
+		cvSetImageROI(tImg, cvRect(x, y, w, h));
 
 		parts[i] = new Frame(tImg);
 		((Frame *) parts[i])->initData();;
