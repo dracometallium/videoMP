@@ -52,8 +52,8 @@ Item **FrameSlicer::slice(Item * item, int numParts)
 	}
 	parts = new Item *[numParts];
 	for (i = 0; i < numParts; i++) {
-		w = imgW / col + BORDER;
-		h = imgH / line + BORDER;
+		w = imgW / c + BORDER;
+		h = imgH / l + BORDER;
 		x = (i % c) * (w - BORDER);
 		y = (i / c) * (h - BORDER);
 
