@@ -19,8 +19,8 @@ int FrameSlicer::optimalSize(int imgH, int imgW, int parts)
 		if ((parts % i) == 0) {
 			col = parts / i;
 			line = i;
-			nW = (imgW + col - 1) / col;
-			nH = (imgH + line - 1) / line;
+			nW = imgW / col + BORDER;
+			nH = imgH / line + BORDER;
 			ratio = fabs((nH / nW) - 1);
 			if (ratio < bestRatio) {
 				c = col;
@@ -52,14 +52,10 @@ Item **FrameSlicer::slice(Item * item, int numParts)
 	}
 	parts = new Item *[numParts];
 	for (i = 0; i < numParts; i++) {
-		w = (imgW + c - 1) / c;
-		h = (imgH + l - 1) / l;
-		x = (i % c) * w - BORDER;
-		y = (i / c) * h - BORDER;
-		x = (x < 0) ? 0 : x;
-		y = (y < 0) ? 0 : y;
-		w = w + 2 * BORDER;
-		h = h + 2 * BORDER;
+		w = imgW / col + BORDER;
+		h = imgH / line + BORDER;
+		x = (i % c) * (w - BORDER);
+		y = (i / c) * (h - BORDER);
 
 		zw = (x + w > imgW) ? imgW - x : w;
 		zh = (y + h > imgH) ? imgH - y : h;
