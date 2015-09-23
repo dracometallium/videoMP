@@ -54,9 +54,9 @@ int PluginFindSecondariesBlobs::process(Item * item)
 				(*it).second->maxy - (*it).second->miny);
 		width = (int)width *3;
 		bbox2D(cvGetSize(frame->frame), width, cvPoint((*it).second->centroid.x, (*it).second->centroid.y), &r);	//calculate r box to set image roi later.
-		cvRectangle(frame->frame, cvPoint(r.x, r.y),
-			    cvPoint(r.x + r.width, r.y + r.height),
-			    cvScalar(255, 0, 0, 0), 1, 8, 0);
+//		cvRectangle(frame->frame, cvPoint(r.x, r.y),
+//			    cvPoint(r.x + r.width, r.y + r.height),
+//			    cvScalar(255, 0, 0, 0), 1, 8, 0);
 
 		std::vector < Marker * >markers;
 		Marker *mcenter = new Marker();	//main team marker
@@ -68,6 +68,9 @@ int PluginFindSecondariesBlobs::process(Item * item)
 		for (unsigned int i = 0;
 		     i < (*frame->data)[0]->blue_team->usesColor.size(); ++i) {
 			int cid = (*frame->data)[0]->blue_team->usesColor[i];
+
+			CvRect imgROI =
+				cvGetImageROI ((*frame->data)[cid]->segmentated);
 
 			cvSetImageROI((*frame->data)[cid]->segmentated,
 				      cvRect(r.x, r.y, r.width, r.height));
@@ -89,14 +92,15 @@ int PluginFindSecondariesBlobs::process(Item * item)
 				m->area = (*it2).second->area;
 				markers.push_back(m);
 
-				cvCircle(frame->frame,
-					 cvPoint((*it2).second->centroid.x +
-						 r.x,
-						 (*it2).second->centroid.y +
-						 r.y), 3, cvScalar(0, 255, 0,
-								   0), 1, 8, 0);
+//				cvCircle(frame->frame,
+//					 cvPoint((*it2).second->centroid.x +
+//						 r.x,
+//						 (*it2).second->centroid.y +
+//						 r.y), 3, cvScalar(0, 255, 0,
+//								   0), 1, 8, 0);
 			}
 			cvResetImageROI((*frame->data)[cid]->segmentated);
+			cvSetImageROI((*frame->data)[cid]->segmentated, imgROI);
 		}
 
 		matching->calcMarkersAngle(mcenter, markers);
@@ -172,9 +176,9 @@ int PluginFindSecondariesBlobs::process(Item * item)
 				y = y +
 				    (*frame->data)[0]->blue_team->
 				    patches[j]->center.y;
-				cvCircle(frame->frame, cvPoint(x, y), 2,
-					 cvScalar(255, 255, 0), CV_FILLED,
-					 CV_AA, 0);
+//				cvCircle(frame->frame, cvPoint(x, y), 2,
+//					 cvScalar(255, 255, 0), CV_FILLED,
+//					 CV_AA, 0);
 
 				std::stringstream Num;
 				std::string str;
@@ -183,17 +187,17 @@ int PluginFindSecondariesBlobs::process(Item * item)
 
 				str = Num.str();
 				char *char_type = (char *)str.c_str();
-				cvPutText(frame->frame, char_type, cvPoint(x, y),
-					  &font, cvScalar(255, 0, 0));
+//				cvPutText(frame->frame, char_type, cvPoint(x, y),
+//					  &font, cvScalar(255, 0, 0));
 
 				for (unsigned int k = 0; k < markers.size();
 				     ++k) {
-					cvLine(frame->frame,
-					       cvPoint(mcenter->center.x,
-						       mcenter->center.y),
-					       cvPoint(markers[k]->center.x,
-						       markers[k]->center.y),
-					       cvScalar(255, 0, 0), 1);
+//					cvLine(frame->frame,
+//					       cvPoint(mcenter->center.x,
+//						       mcenter->center.y),
+//					       cvPoint(markers[k]->center.x,
+//						       markers[k]->center.y),
+//					       cvScalar(255, 0, 0), 1);
 					(*frame->data)[0]->blue_team->patches[j]->markers[k]->dist = matching->euclideanDistance2D(mcenter->center, markers[k]->center);	// distance between central main marker and a marker.
 				}
 			}
