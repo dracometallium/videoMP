@@ -173,8 +173,9 @@ void Segmentation::colorPaint(IplImage *imageBGR, std::vector<sColor*>&color) {
 	imageHSV = cvCreateImage(cvGetSize(imageBGR), 8, 3);
 	convert.bgr2hsv(imageBGR, imageHSV);
 
-	int hIn = imageHSV->height;
-	int wIn = imageHSV->width;
+	CvSize imgS = cvGetSize(imageHSV);
+	int hIn = imgS.height;
+	int wIn = imgS.width;
 	int rowSizeIn = imageHSV->widthStep;		// Size of row in bytes, including extra padding
 
 	char *imOfsIn = imageHSV->imageData;	// Pointer to the start of the input image HSV pixels.
@@ -217,8 +218,9 @@ void Segmentation::colorPaint(IplImage *imageBGR, std::vector<sColor*>&color, in
 	imageHSV = cvCreateImage(cvGetSize(imageBGR), 8, 3);
 	convert.bgr2hsv(imageBGR, imageHSV);
 
-	int hIn = imageHSV->height;
-	int wIn = imageHSV->width;
+	CvSize imgS = cvGetSize(imageHSV);
+	int hIn = imgS.height;
+	int wIn = imgS.width;
 	int rowSizeIn = imageHSV->widthStep;		// Size of row in bytes, including extra padding
 
 	char *imOfsIn = imageHSV->imageData;	// Pointer to the start of the input image HSV pixels.

@@ -13,7 +13,10 @@ int FrameSlicer::optimalSize(int imgH, int imgW, int parts)
 	float bestRatio, ratio;
 	int col, line;
 	int nH, nW;
+	int bH, bW;
 	int i;
+	bH = 0;
+	bW = 0;
 	bestRatio = std::numeric_limits < float >::infinity();
 	for (i = 1; i <= parts; i++) {
 		if ((parts % i) == 0) {
@@ -25,17 +28,20 @@ int FrameSlicer::optimalSize(int imgH, int imgW, int parts)
 			if (ratio < bestRatio) {
 				c = col;
 				l = line;
+				bW = nW;
+				bH = nH;
 				bestRatio = ratio;
 			}
 		}
 	}
+	Frame::minSize = cvSize(bW, bH);
 	return 0;
 }
 
 Item **FrameSlicer::slice(Item * item, int numParts)
 {
 	int imgH, imgW, i;
-	int x, y, h, w, zw, zh;
+	int x, y, h, w;
 	Frame *frame;
 	Item **parts;
 	IplImage *tImg, *img;
@@ -57,19 +63,17 @@ Item **FrameSlicer::slice(Item * item, int numParts)
 		x = (i % c) * (w - BORDER);
 		y = (i / c) * (h - BORDER);
 
-		zw = (x + w > imgW) ? imgW - x : w;
-		zh = (y + h > imgH) ? imgH - y : h;
+		w = (x + w > imgW) ? imgW - x : w;
+		h = (y + h > imgH) ? imgH - y : h;
 
-		cvSetImageROI(img, cvRect(x, y, zw, zh));
-		tImg = cvCreateImage(cvSize(w, h), img->depth, img->nChannels);
-		cvSet(tImg, cvScalar(0));	// Clear image to black.
-		cvSetImageROI(tImg, cvRect(0, 0, zw, zh));
-		cvCopy(img, tImg, NULL);
-		cvResetImageROI(tImg);
-		cvResetImageROI(img);
+		tImg = cvCreateImageHeader(cvSize(imgW, imgH), img->depth,
+					   img->nChannels);
+		tImg->imageData = img->imageData;
+		tImg->imageDataOrigin = img->imageDataOrigin;
+		cvSetImageROI(tImg, cvRect(x, y, w, h));
 
 		parts[i] = new Frame(tImg);
 		((Frame *) parts[i])->initData();;
 	}
-	return &(parts[0]);
+	return parts;
 }

@@ -42,7 +42,7 @@ int ItemSwitch::run()
 			}
 		}
 		if (item != NULL) {
-		p = slicer->slice(item, NPARTS);
+			p = slicer->slice(item, NPARTS);
 #pragma omp task private(t) firstprivate(p, item) if(threads = (threads - 1), true)
 			if (running && (omp_get_wtime() - item->time) <
 			    maxThreshold) {
@@ -62,7 +62,7 @@ int ItemSwitch::run()
 							pluginStack[i]->process
 							    (p[t]);
 						}
-						delete p[t];
+						p[t]->delPart();
 #pragma omp atomic
 						threads++;
 					}
@@ -93,9 +93,14 @@ int ItemSwitch::run()
 				delete item;
 #pragma omp atomic
 				threads++;
+			} else {
+				delete item;
+#pragma omp atomic
+				threads++;
 			}
 		}
 	}
+#pragma omp taskwait
 	return 0;
 }
 
