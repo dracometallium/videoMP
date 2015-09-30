@@ -9,6 +9,7 @@
 #include "team.h"
 
 std::vector < std::vector < sData * >*>Frame::dpool;
+CvSize Frame::minSize;
 
 Frame::Frame(IplImage * iframe)
  : Item()
@@ -27,6 +28,17 @@ Frame::~Frame()
 		}
 		data = NULL;
 	}
+}
+
+int Frame::delPart()
+{
+	frame->imageData = NULL;
+	frame->imageDataOrigin = NULL;
+	frame->imageSize = 0;
+	frame->height = 0;
+	frame->width = 0;
+	delete this;
+	return 0;
 }
 
 int Frame::initData()
@@ -48,6 +60,8 @@ int Frame::initData()
 
 void Frame::resetData()
 {
+	CvSize imgSize = cvGetSize(frame);
+	CvRect fROI = cvRect(0, 0, imgSize.width, imgSize.height);
 	for (int i = 0; i < NUM_COLOR_TYPES; ++i) {
 		cvSet((*data)[i]->segmentated, cvScalar(0));	// Clear image to black.
 		(*data)[i]->result = 0;
@@ -55,6 +69,12 @@ void Frame::resetData()
 		(*data)[i]->blobs = new CvBlobs();
 		cvReleaseTracks(*((*data)[i]->tracks));
 		(*data)[i]->tracks = new CvTracks();
+		cvResetImageROI((*data)[i]->image_hsv);
+		cvResetImageROI((*data)[i]->segmentated);
+		cvResetImageROI((*data)[i]->labelImg);
+		cvSetImageROI((*data)[i]->image_hsv, fROI);
+		cvSetImageROI((*data)[i]->segmentated, fROI);
+		cvSetImageROI((*data)[i]->labelImg, fROI);
 	}
 
 	for (unsigned int j = 0; j < (*data)[0]->blue_team->patches.size(); ++j)
@@ -215,7 +235,7 @@ std::vector < sData * >*Frame::newData(IplImage * img)
 
 	h->calcMH();
 
-	CvSize imgSize = cvGetSize(img);
+	CvSize imgSize = minSize;
 
 	for (int i = 0; i < NUM_COLOR_TYPES; i++) {
 		(*ndata).push_back(new sData());

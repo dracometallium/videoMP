@@ -31,8 +31,9 @@ int PluginColorSegmentation::process(Item * item)
 {
 	Frame *frame;
 	frame = (Frame *) item;
-	int hIn = (*frame->data)[0]->image_hsv->height;
-	int wIn = (*frame->data)[0]->image_hsv->width;
+	CvSize imgS = cvGetSize((*frame->data)[0]->image_hsv);
+	int hIn = imgS.height;
+	int wIn = imgS.width;
 	int rowSizeIn = (*frame->data)[0]->image_hsv->widthStep;	// Size of row in bytes, including extra padding
 	char *imOfsIn = (*frame->data)[0]->image_hsv->imageData;	// Pointer to the start of the input image HSV pixels.
 
