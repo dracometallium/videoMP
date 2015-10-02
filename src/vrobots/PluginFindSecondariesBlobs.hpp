@@ -46,6 +46,7 @@ class PluginFindSecondariesBlobs:public Plugin {
 	CvMat *r_mat;
 	CvMat *M;
 	CvFont font;
+	int draw;
 };
 
 #endif
