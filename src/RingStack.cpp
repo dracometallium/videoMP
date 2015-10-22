@@ -38,6 +38,9 @@ Item *RingStack::put(Item * item)
 {
 	Item *oldItem;
 	oldItem = NULL;
+	if(item == NULL){
+		return NULL;
+	}
 	top = (top + 1) % SIZE;
 	if (numItems == SIZE) {
 		oldItem = items[top];
