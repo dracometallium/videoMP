@@ -13,12 +13,14 @@ int Input::run()
 	running = 1;
 	while (running) {
 		item = generate();
+		if (item != NULL) {
 #pragma omp critical (RingStack)
-		{
-			item = ringStack->put(item);
-			numItems++;
+			{
+				item = ringStack->put(item);
+				numItems++;
+			}
+			delete item;
 		}
-		delete item;
 	}
 	return 0;
 }

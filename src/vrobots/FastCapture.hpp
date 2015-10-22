@@ -45,7 +45,7 @@ class FastCapture:public Input {
 	 std::string filename;
 	VideoCapture capture;
 	Mat tframe;
-	RingStack * rs;
+	RingStack * irs;
 	int fps;
 	int total_frames;
 	int frame_height;
