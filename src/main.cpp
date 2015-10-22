@@ -10,7 +10,7 @@
 #include "Plugin.hpp"
 #include "Slicer.hpp"
 
-#include "vrobots/CaptureFromFile.hpp"
+#include "vrobots/FastCapture.hpp"
 #include "vrobots/FrameSlicer.hpp"
 
 #include "vrobots/PluginBlur.hpp"
@@ -187,7 +187,7 @@ int main(int carg, char **varg)
 	color.push_back(c);
 
 	rs = new RingStack(60);
-	input = new CaptureFromFile(rs, file);
+	input = new FastCapture(rs, file);
 	sl = new FrameSlicer();
 	is = new ItemSwitch(NTHREADS, NPARTS, sl, rs);
 	ps1 = new PluginStack();
