@@ -87,7 +87,7 @@ int FrameSlicer::delPart(Item * item)
 	frame->frame->imageSize = 0;
 	frame->frame->height = 0;
 	frame->frame->width = 0;
-	delete this;
+	delete frame;
 	return 0;
 }
 
