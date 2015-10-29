@@ -77,3 +77,17 @@ Item **FrameSlicer::slice(Item * item, int numParts)
 	}
 	return parts;
 }
+
+int FrameSlicer::delPart(Item * item)
+{
+	Frame * frame;
+	frame = (Frame *) item;
+	frame->frame->imageData = NULL;
+	frame->frame->imageDataOrigin = NULL;
+	frame->frame->imageSize = 0;
+	frame->frame->height = 0;
+	frame->frame->width = 0;
+	delete this;
+	return 0;
+}
+

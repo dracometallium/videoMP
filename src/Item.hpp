@@ -5,7 +5,6 @@ class Item {
  public:
 	Item();
 	virtual ~ Item();
-	virtual int delPart();
 	double time;
 };
 

@@ -13,3 +13,9 @@ Item **Slicer::slice(Item * item, int numParts)
 Slicer::~Slicer()
 {
 }
+
+int Slicer::delPart(Item * item)
+{
+	delete item;
+	return 0;
+}

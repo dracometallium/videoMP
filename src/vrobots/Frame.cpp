@@ -30,17 +30,6 @@ Frame::~Frame()
 	}
 }
 
-int Frame::delPart()
-{
-	frame->imageData = NULL;
-	frame->imageDataOrigin = NULL;
-	frame->imageSize = 0;
-	frame->height = 0;
-	frame->width = 0;
-	delete this;
-	return 0;
-}
-
 int Frame::initData()
 {
 	data = NULL;

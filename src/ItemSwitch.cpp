@@ -62,7 +62,7 @@ int ItemSwitch::run()
 							pluginStack[i]->process
 							    (p[t]);
 						}
-						p[t]->delPart();
+						slicer->delPart(p[t]);
 #pragma omp atomic
 						threads++;
 					}
