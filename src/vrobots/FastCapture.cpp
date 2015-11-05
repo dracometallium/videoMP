@@ -25,10 +25,11 @@ FastCapture::FastCapture(RingStack * rs, std::string _filename)
  : Input(rs)
 {
 	Frame *nframe;
-	IplImage tIpl;
+	IplImage *tIpl;
 	IplImage *ipl;
 	int i;
-	irs = new RingStack(601);
+	irs = new RingStack(1200);
+	tIpl = new IplImage[600];
 	filename = _filename;
 	if (!capture.open(filename)) {
 		std::cout << "Failed to open video: " << filename << std::endl;
@@ -47,11 +48,14 @@ FastCapture::FastCapture(RingStack * rs, std::string _filename)
 	lastTime = 0;
 	for (i = 0; i < 600; i++) {
 		capture >> tframe;
-		tIpl = tframe;
-		ipl = cvCloneImage(&tIpl);
+		tIpl[i] = tframe;
+	}
+	for (i = 0; i < 1200; i++) {
+		ipl = cvCloneImage(&(tIpl[i % 600]));
 		nframe = new Frame(ipl);
 		irs->put(nframe);
 	}
+	delete tIpl;
 }
 
 Item *FastCapture::generate()
@@ -62,7 +66,7 @@ Item *FastCapture::generate()
 	}
 	lastTime = lastTime + dTime;
 	while (lastTime > omp_get_wtime()) {
-		usleep(1000 * dTime);
+		usleep(250000 * dTime);
 	}
 
 	nframe = irs->get();

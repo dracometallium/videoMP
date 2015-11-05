@@ -33,7 +33,7 @@ int main(int carg, char **varg)
 	int NTHREADS, NPARTS;
 	double maxThreshold;
 	char *file = "../robots.avi";
-	maxThreshold = 1.0;
+	maxThreshold = 10.0;
 
 	if (carg > 2) {
 		NTHREADS = atoi(varg[1]);
@@ -212,6 +212,7 @@ int main(int carg, char **varg)
 	is->addPluginStack(ps2);
 	is->setThreshold(maxThreshold);
 
+	sleep(2);
 #pragma omp parallel sections num_threads(3)
 	{
 #pragma omp section
