@@ -28,8 +28,8 @@ FastCapture::FastCapture(RingStack * rs, std::string _filename)
 	IplImage *tIpl;
 	IplImage *ipl;
 	int i;
-	irs = new RingStack(1200);
-	tIpl = new IplImage[600];
+	int loops, nframes;
+	loops = 3;
 	filename = _filename;
 	if (!capture.open(filename)) {
 		std::cout << "Failed to open video: " << filename << std::endl;
@@ -41,17 +41,20 @@ FastCapture::FastCapture(RingStack * rs, std::string _filename)
 		    << std::endl;
 		fps = 30;
 	}
+	nframes = fps * 10;
+	irs = new RingStack(nframes * loops);
+	tIpl = new IplImage[nframes];
 	dTime = (1.0 / fps);
 	total_frames = (int)capture.get(CV_CAP_PROP_FRAME_COUNT);
 	frame_height = (int)capture.get(CV_CAP_PROP_FRAME_HEIGHT);
 	frame_width = (int)capture.get(CV_CAP_PROP_FRAME_WIDTH);
 	lastTime = 0;
-	for (i = 0; i < 600; i++) {
+	for (i = 0; i < nframes; i++) {
 		capture >> tframe;
 		tIpl[i] = tframe;
 	}
-	for (i = 0; i < 1200; i++) {
-		ipl = cvCloneImage(&(tIpl[i % 600]));
+	for (i = 0; (i < nframes * loops); i++) {
+		ipl = cvCloneImage(&(tIpl[i % nframes]));
 		nframe = new Frame(ipl);
 		irs->put(nframe);
 	}
