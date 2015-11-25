@@ -26,10 +26,8 @@ int ItemSwitch::addPluginStack(PluginStack * ps)
 
 int ItemSwitch::run()
 {
-	int i, t;
 	running = 1;
 	Item *item;
-	Item **p;
 	int threads = NTHREADS;
 #pragma omp parallel num_threads(NTHREADS + 1)
 #pragma omp single
@@ -42,16 +40,19 @@ int ItemSwitch::run()
 			}
 		}
 		if (item != NULL) {
-			p = slicer->slice(item, NPARTS);
-#pragma omp task private(t) firstprivate(p, item)
+#pragma omp task firstprivate(item)
 			if (running && (omp_get_wtime() - item->time) <
 			    maxThreshold) {
 				bool tooLate = false;
 				double dtime;
+				int t;
+				Item **p;
+				p = slicer->slice(item, NPARTS);
 				for (t = 0; t < NPARTS; t++)
-#pragma omp task private(i) firstprivate(t)
+#pragma omp task firstprivate(t)
 				{
 					double dt;
+					int i;
 #pragma omp atomic
 					threads--;
 					dt = omp_get_wtime() - item->time;
