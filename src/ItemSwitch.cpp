@@ -43,36 +43,30 @@ int ItemSwitch::run()
 		}
 		if (item != NULL) {
 			p = slicer->slice(item, NPARTS);
-#pragma omp task private(t) firstprivate(p, item) if(threads = (threads - 1), true)
+#pragma omp task private(t) firstprivate(p, item)
 			if (running && (omp_get_wtime() - item->time) <
 			    maxThreshold) {
 				bool tooLate = false;
 				double dtime;
-				for (t = 0; t < NPARTS; t++) {
-#pragma omp task private(i) firstprivate(t) if((threads = (threads - 1)) > 0)
-					{
-						double dt;
-						dt = omp_get_wtime() -
-						    item->time;
-						if (dt > maxThreshold) {
-							tooLate = true;
-						}
-						for (i = 0; i < numPStaks &&
-						     !tooLate; i++) {
-							pluginStack[i]->process
-							    (p[t]);
-						}
-						slicer->delPart(p[t]);
+				for (t = 0; t < NPARTS; t++)
+#pragma omp task private(i) firstprivate(t)
+				{
+					double dt;
 #pragma omp atomic
-						threads++;
+					threads--;
+					dt = omp_get_wtime() - item->time;
+					if (dt > maxThreshold) {
+						tooLate = true;
 					}
-				}
+					for (i = 0; i < numPStaks &&
+					     !tooLate; i++) {
+						pluginStack[i]->process(p[t]);
+					}
+					slicer->delPart(p[t]);
 #pragma omp atomic
-				threads++;
-				/*
-				 * There is no point in taking away a thread if it is just
-				 * going to wait.
-				 */
+					threads++;
+				}
+
 #pragma omp taskwait
 #pragma omp atomic
 				threads--;
@@ -94,6 +88,8 @@ int ItemSwitch::run()
 #pragma omp atomic
 				threads++;
 			} else {
+#pragma omp atomic
+				threads--;
 				delete item;
 #pragma omp atomic
 				threads++;
