@@ -2,10 +2,6 @@ NAME=videoMP
 
 CXX=gcc
 
-TLIBS=
-TFLAGS=
-TAU_MAKEFILE=/home/draco/sources/tau-2.25/x86_64/lib/Makefile.tau-memory-openmp
-
 DEBUG=-O3
 LFLAGS=-fopenmp
 CFLAGS=-Wall -fopenmp -pipe
@@ -20,11 +16,11 @@ all: $(NAME)
 
 $(NAME): $(OBJECTS)
 	@echo LINKING
-	$(CXX) $(OBJECTS) $(DEBUG) $(LFLAGS) $(LIBS) $(TLIBS) $(INCPATH) -o videoMP
+	$(CXX) $(OBJECTS) $(DEBUG) $(LFLAGS) $(LIBS) $(INCPATH) -o videoMP
 
 .cpp.o:
 	@echo COMPILING $<
-	$(CXX) $(INCPATH) $(CFLAGS) $(TFLAGS) $(DEBUG) -c $< -o $@
+	$(CXX) $(INCPATH) $(CFLAGS) $(DEBUG) -c $< -o $@
 
 debug: DEBUG=-g -pg -fno-inline -D DEBUG
 
@@ -34,13 +30,3 @@ clean:
 	rm -rf $(OBJECTS)
 	rm -f $(NAME)
 
-tau: TAU_OPTIONS=-optRevert -optCompInst
-include $(TAU_MAKEFILE)
-
-tau: TFLAGS=$(TAU_INCLUDE) $(TAU_DEFS)
-
-tau: TLIBS=$(TAU_LIBS)
-
-tau: CXX=$(TAU_CXX) $(TAU_OPTIONS)
-
-tau: all
