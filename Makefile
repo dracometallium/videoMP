@@ -1,6 +1,6 @@
 NAME=videoMP
 
-CXX=gcc
+CXX=g++
 
 DEBUG=-O3
 LFLAGS=-fopenmp
