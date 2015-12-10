@@ -2,8 +2,8 @@ NAME=videoMP
 
 CXX=gcc
 
-TLIBS=""
-TFLAGS=""
+TLIBS=
+TFLAGS=
 TAU_MAKEFILE=/home/draco/sources/tau-2.25/x86_64/lib/Makefile.tau-memory-openmp
 
 DEBUG=-O3
