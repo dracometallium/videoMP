@@ -12,6 +12,7 @@ ItemSwitch::ItemSwitch(int numThreads, int nparts, Slicer * s, RingStack * rs)
 	maxThreshold = 5;
 	maxItemWait = 0;
 	totalWait = 0;
+	omp_set_dynamic(0);
 	if (!omp_get_nested()) {
 		omp_set_nested(1);
 	}
@@ -29,7 +30,7 @@ int ItemSwitch::run()
 	running = 1;
 	Item *item;
 	int threads = NTHREADS;
-#pragma omp parallel num_threads(NTHREADS + 1)
+#pragma omp parallel num_threads(NTHREADS + 1) default(shared)
 #pragma omp single
 	while (running) {
 		item = NULL;
@@ -40,21 +41,25 @@ int ItemSwitch::run()
 			}
 		}
 		if (item != NULL) {
-#pragma omp task firstprivate(item)
+#pragma omp atomic
+			threads--;
+#pragma omp task firstprivate(item) default(shared)
 			if (running && (omp_get_wtime() - item->time) <
 			    maxThreshold) {
 				bool tooLate = false;
 				double dtime;
 				int t;
 				Item **p;
+				int deltaThreads;
+				deltaThreads = NPARTS - 1;
 				p = slicer->slice(item, NPARTS);
+#pragma omp atomic
+				threads = threads - deltaThreads;
 				for (t = 0; t < NPARTS; t++)
-#pragma omp task firstprivate(t)
+#pragma omp task firstprivate(t) default(shared)
 				{
 					double dt;
 					int i;
-#pragma omp atomic
-					threads--;
 					dt = omp_get_wtime() - item->time;
 					if (dt > maxThreshold) {
 						tooLate = true;
