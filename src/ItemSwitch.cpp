@@ -1,4 +1,5 @@
 #include "ItemSwitch.hpp"
+#include <stdio.h>
 
 ItemSwitch::ItemSwitch(int numThreads, int nparts, Slicer * s, RingStack * rs)
 {
@@ -56,7 +57,7 @@ int ItemSwitch::run()
 #pragma omp atomic
 				threads = threads - deltaThreads;
 				for (t = 0; t < NPARTS; t++)
-#pragma omp task firstprivate(t) default(shared)
+#pragma omp task firstprivate(t, p) default(shared) if(t != (NPARTS - 1))
 				{
 					double dt;
 					int i;
@@ -66,6 +67,7 @@ int ItemSwitch::run()
 					}
 					for (i = 0; i < numPStaks &&
 					     !tooLate; i++) {
+						slicer->resetItem(p[t]);
 						pluginStack[i]->process(p[t]);
 					}
 					slicer->delPart(p[t]);

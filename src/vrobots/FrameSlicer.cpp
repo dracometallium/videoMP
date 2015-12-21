@@ -38,6 +38,12 @@ int FrameSlicer::optimalSize(int imgH, int imgW, int parts)
 	return 0;
 }
 
+int FrameSlicer::resetItem(Item * item)
+{
+	((Frame *) item)->initData();;
+	return 0;
+}
+
 Item **FrameSlicer::slice(Item * item, int numParts)
 {
 	int imgH, imgW, i;

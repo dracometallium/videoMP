@@ -9,6 +9,7 @@ class FrameSlicer:public Slicer {
  public:
 	virtual Item ** slice(Item * item, int numParts);
 	 FrameSlicer();
+	virtual int resetItem(Item * item);
 	virtual int delPart(Item * item);
 
  private:

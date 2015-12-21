@@ -4,6 +4,7 @@
 class Slicer {
  public:
 	virtual Item ** slice(Item * item, int numParts);
+	virtual int resetItem(Item * item);
 	 virtual ~ Slicer();
 	virtual int delPart(Item * item);
 };

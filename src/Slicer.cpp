@@ -10,6 +10,11 @@ Item **Slicer::slice(Item * item, int numParts)
 	return parts;
 }
 
+int Slicer::resetItem(Item * item)
+{
+	return 0;
+}
+
 Slicer::~Slicer()
 {
 }

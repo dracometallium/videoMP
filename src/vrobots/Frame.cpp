@@ -32,16 +32,15 @@ Frame::~Frame()
 
 int Frame::initData()
 {
-	data = NULL;
+	if (data == NULL) {
 #pragma omp critical (dpool)
-	{
 		if (!dpool.empty()) {
 			data = dpool.back();
 			dpool.pop_back();
 		}
-	}
-	if (data == NULL) {
-		data = newData(frame);
+		if (data == NULL) {
+			data = newData(frame);
+		}
 	}
 	resetData();
 	return 0;
