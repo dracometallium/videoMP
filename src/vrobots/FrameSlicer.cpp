@@ -79,7 +79,6 @@ Item **FrameSlicer::slice(Item * item, int numParts)
 		cvSetImageROI(tImg, cvRect(x, y, w, h));
 
 		parts[i] = new Frame(tImg);
-		((Frame *) parts[i])->initData();;
 	}
 	return parts;
 }
