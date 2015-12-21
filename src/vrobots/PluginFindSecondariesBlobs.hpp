@@ -35,15 +35,11 @@ class PluginFindSecondariesBlobs:public Plugin {
 	virtual int process(Item * item);
 
  private:
-	void rotation_matrix(float tita);
+	void rotation_matrix(CvMat *rot_mat, float tita);
 
  private:
 	void bbox2D(const CvSize imgSize, const int px_length,
 		    const CvPoint center, CvRect * r);
-	CvRect r;
-	PatternMatching *matching;
-	CvMat *rot_mat;
-	CvMat *r_mat;
 	CvMat *M;
 	CvFont font;
 	int draw;

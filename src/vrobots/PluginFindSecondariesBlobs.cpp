@@ -32,11 +32,6 @@ PluginFindSecondariesBlobs::PluginFindSecondariesBlobs()
 	cvInitFont(&font, CV_FONT_HERSHEY_SIMPLEX | CV_FONT_ITALIC, 0.7, 0.7, 0,
 		   2);
 
-	matching = new PatternMatching();
-
-	rot_mat = cvCreateMat(2, 2, CV_32FC1);
-	r_mat = cvCreateMat(2, 1, CV_32FC1);
-
 	M = cvCreateMat(2, 1, CV_32FC1);
 	M->data.fl[0 * M->cols + 0] = (float)15.0;	// M_x
 	M->data.fl[1 * M->cols + 0] = (float)0.0;	// M_y
@@ -47,8 +42,15 @@ PluginFindSecondariesBlobs::PluginFindSecondariesBlobs()
 
 int PluginFindSecondariesBlobs::process(Item * item)
 {
+	CvMat *r_mat;
+	CvMat *rot_mat;
 	Frame *frame;
+	CvRect r;
+	PatternMatching *matching;
 	frame = (Frame *) item;
+	rot_mat = cvCreateMat(2, 2, CV_32FC1);
+	r_mat = cvCreateMat(2, 1, CV_32FC1);
+	matching = new PatternMatching();
 	int colorId = (*frame->data)[0]->blue_team->team_colorid;
 	for (CvBlobs::iterator it = (*frame->data)[colorId]->blobs->begin();
 	     it != (*frame->data)[colorId]->blobs->end(); ++it) {
@@ -141,7 +143,7 @@ int PluginFindSecondariesBlobs::process(Item * item)
 
 				(*frame->data)[0]->blue_team->
 				    patches[j]->orientation = markers[1]->angle;
-				rotation_matrix((*frame->data)[0]->
+				rotation_matrix(rot_mat, (*frame->data)[0]->
 						blue_team->patches[j]->
 						orientation);
 				(*frame->data)[0]->blue_team->patches[j]->detected = true;	// detected object
@@ -219,12 +221,16 @@ int PluginFindSecondariesBlobs::process(Item * item)
 			markers[j]->~Marker();
 			markers.erase(markers.begin());
 		}
-		mcenter->~Marker();
+	//	mcenter->~Marker();
+		delete mcenter;
 	}
+	cvReleaseMat(&rot_mat);
+	cvReleaseMat(&r_mat);
+	delete matching;
 	return 0;
 }
 
-void PluginFindSecondariesBlobs::rotation_matrix(float tita)
+void PluginFindSecondariesBlobs::rotation_matrix(CvMat * rot_mat, float tita)
 {
 	//cvZero(rot_mat);
 	rot_mat->data.fl[0 * rot_mat->cols + 0] = (float)cos(tita);
