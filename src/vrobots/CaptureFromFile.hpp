@@ -38,7 +38,7 @@
 using namespace cv;
 class CaptureFromFile:public Input {
  public:
-	CaptureFromFile(RingStack * rs, std::string _filename);
+	CaptureFromFile(RingStack * rs, std::string _filename, double ignore);
 	virtual Item *generate();
 
  protected:

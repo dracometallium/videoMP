@@ -21,8 +21,8 @@
 
 #include "FastCapture.hpp"
 
-FastCapture::FastCapture(RingStack * rs, std::string _filename)
- : Input(rs)
+FastCapture::FastCapture(RingStack * rs, std::string _filename, double ignore)
+ : Input(rs, ignore)
 {
 	Frame *nframe;
 	IplImage *tIpl;
@@ -41,7 +41,7 @@ FastCapture::FastCapture(RingStack * rs, std::string _filename)
 		    << std::endl;
 		fps = 30;
 	}
-	nframes = fps * 10;
+	nframes = fps * (11 + ignore);
 	irs = new RingStack(nframes * loops);
 	tIpl = new IplImage[nframes];
 	dTime = (1.0 / fps);

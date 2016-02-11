@@ -187,7 +187,7 @@ int main(int carg, char **varg)
 	color.push_back(c);
 
 	rs = new RingStack(60);
-	input = new FastCapture(rs, file);
+	input = new FastCapture(rs, file, 3.0);
 	sl = new FrameSlicer();
 	is = new ItemSwitch(NTHREADS, NPARTS, sl, rs);
 	ps1 = new PluginStack();
@@ -228,7 +228,7 @@ int main(int carg, char **varg)
 #pragma omp section
 		{
 			//run UI
-			sleep(10);
+			sleep(13);
 			input->stop();
 			is->stop();
 		}

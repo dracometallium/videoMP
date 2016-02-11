@@ -21,8 +21,9 @@
 
 #include "CaptureFromFile.hpp"
 
-CaptureFromFile::CaptureFromFile(RingStack * rs, std::string _filename)
- : Input(rs)
+CaptureFromFile::CaptureFromFile(RingStack * rs, std::string _filename, double
+				 ignore)
+:Input(rs, ignore)
 {
 	filename = _filename;
 	if (!capture.open(filename)) {

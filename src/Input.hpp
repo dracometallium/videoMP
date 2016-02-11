@@ -10,6 +10,7 @@ class Input {
 
  public:
 	Input(RingStack * rs);
+	Input(RingStack * rs, double ignore);
 	//run can be overridden, but it shouldn't be necessary.
 	virtual int run();
 	int stop();
@@ -18,6 +19,7 @@ class Input {
 
  private:
 	volatile int running;
+	double ignore;
 	RingStack *ringStack;
 	//generate should be overridden.
 	virtual Item *generate();

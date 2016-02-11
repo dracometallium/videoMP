@@ -38,7 +38,7 @@
 using namespace cv;
 class FastCapture:public Input {
  public:
-	FastCapture(RingStack * rs, std::string _filename);
+	FastCapture(RingStack * rs, std::string _filename, double ignore);
 	virtual Item *generate();
 
  protected:

@@ -80,7 +80,8 @@ int ItemSwitch::run()
 				threads--;
 				delete p;
 				dtime = omp_get_wtime() - item->time;
-				if (!tooLate && dtime < maxThreshold) {
+				if (!tooLate && (dtime < maxThreshold)
+				    && !(item->ignore)) {
 #pragma omp atomic
 					totalWait = totalWait + dtime;
 					if (maxItemWait < dtime) {
