@@ -30,9 +30,9 @@ int Input::run()
 #pragma omp critical (RingStack)
 			{
 				item = ringStack->put(item);
-				if (ignore == 0) {
-					numItems++;
-				}
+			}
+			if (ignore == 0) {
+				numItems++;
 			}
 			delete item;
 		}
