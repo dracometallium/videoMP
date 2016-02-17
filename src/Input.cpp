@@ -16,17 +16,22 @@ int Input::run()
 {
 	Item *item;
 	running = 1;
-	ignore = omp_get_wtime() + ignore;
+	if (ignore == 0) {
+#pragma omp critical (itemIgnore)
+		Item::ignore = false;
+	} else {
+		ignore = omp_get_wtime() + ignore;
+	}
 	while (running) {
+		if (ignore != 0) {
+			if (omp_get_wtime() > ignore) {
+#pragma omp critical (itemIgnore)
+				Item::ignore = false;
+				ignore = 0;
+			}
+		}
 		item = generate();
 		if (item != NULL) {
-			if (ignore != 0) {
-				if (omp_get_wtime() > ignore) {
-					ignore = 0;
-				} else {
-					item->ignore = true;
-				}
-			}
 #pragma omp critical (RingStack)
 			{
 				item = ringStack->put(item);

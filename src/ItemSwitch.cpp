@@ -31,6 +31,7 @@ int ItemSwitch::run()
 	running = 1;
 	Item *item;
 	int threads = NTHREADS;
+	bool ignore = true;
 #pragma omp parallel num_threads(NTHREADS + 1) default(shared)
 #pragma omp single
 	while (running) {
@@ -80,8 +81,12 @@ int ItemSwitch::run()
 				threads--;
 				delete p;
 				dtime = omp_get_wtime() - item->time;
-				if (!tooLate && (dtime < maxThreshold)
-				    && !(item->ignore)) {
+				if (ignore) {
+#pragma omp critical (itemIgnore)
+					ignore = Item::ignore;
+				}
+				if (!tooLate && (dtime < maxThreshold) &&
+				    !ignore) {
 #pragma omp atomic
 					totalWait = totalWait + dtime;
 					if (maxItemWait < dtime) {
