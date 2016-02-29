@@ -38,76 +38,71 @@ int ItemSwitch::run()
 		item = NULL;
 		if (ringStack->getSize() > 0 && (threads > 0)) {
 #pragma omp critical (RingStack)
-			{
-				item = ringStack->get();
-			}
+			item = ringStack->get();
 		}
-		if (item != NULL) {
-#pragma omp atomic
-			threads--;
-#pragma omp task firstprivate(item) default(shared)
-			if (running && (omp_get_wtime() - item->time) <
-			    maxThreshold) {
-				bool tooLate = false;
-				double dtime;
-				int t;
-				Item **p;
-				int deltaThreads;
-				deltaThreads = NPARTS - 1;
-				p = slicer->slice(item, NPARTS);
-#pragma omp atomic
-				threads = threads - deltaThreads;
-				for (t = 0; t < NPARTS; t++)
-#pragma omp task firstprivate(t, p) default(shared) if(t != (NPARTS - 1))
-				{
-					double dt;
-					int i;
-					dt = omp_get_wtime() - item->time;
-					if (dt > maxThreshold) {
-						tooLate = true;
-					}
-					for (i = 0; i < numPStaks &&
-					     !tooLate; i++) {
-						slicer->resetItem(p[t]);
-						pluginStack[i]->process(p[t]);
-					}
-					slicer->delPart(p[t]);
-#pragma omp atomic
-					threads++;
-				}
+#pragma omp task firstprivate(item)
+		if (item != NULL && running) {
+			double dtime;
+			int i;
+			for (i = 0; i < numPStaks; i++)
+#pragma omp task firstprivate(i) default(shared)
+			{
 
+				Item **p;
+#pragma omp atomic
+				threads--;
+				if (running && (omp_get_wtime() - item->time) <
+				    maxThreshold) {
+					int t;
+					int deltaThreads;
+					p = slicer->slice(item, NPARTS);
+					deltaThreads = NPARTS - 1;
+#pragma omp atomic
+					threads = threads - deltaThreads;
+					for (t = 0; t < NPARTS; t++)
+#pragma omp task firstprivate(t) default(shared)
+					{
+						double dt;
+						dt = omp_get_wtime() -
+						    item->time;
+						if ((dt < maxThreshold)
+						    && running) {
+							slicer->resetItem(p[t]);
+							pluginStack[i]->process
+							    (p[t]);
+						}
+						slicer->delPart(p[t]);
+#pragma omp atomic
+						threads++;
+					}
+#pragma omp taskwait
+					delete p;
+				}
+			}
 #pragma omp taskwait
 #pragma omp atomic
-				threads--;
-				delete p;
-				dtime = omp_get_wtime() - item->time;
-				if (ignore) {
+			threads--;
+			dtime = omp_get_wtime() - item->time;
+			if (ignore) {
 #pragma omp critical (itemIgnore)
-					ignore = Item::ignore;
-				}
-				if (!tooLate && (dtime < maxThreshold) &&
-				    !ignore) {
-#pragma omp atomic
-					totalWait = totalWait + dtime;
-					if (maxItemWait < dtime) {
-#pragma omp critical
-						if (maxItemWait < dtime) {
-							maxItemWait = dtime;
-						}
-					}
-#pragma omp atomic
-					numItems++;
-				}
-				delete item;
-#pragma omp atomic
-				threads++;
-			} else {
-#pragma omp atomic
-				threads--;
-				delete item;
-#pragma omp atomic
-				threads++;
+				ignore = Item::ignore;
 			}
+			if ((dtime < maxThreshold) && !ignore && running) {
+#pragma omp atomic
+				totalWait = totalWait + dtime;
+				if (maxItemWait < dtime) {
+#pragma omp critical
+					if (maxItemWait < dtime) {
+						maxItemWait = dtime;
+					}
+				}
+#pragma omp atomic
+				numItems++;
+			}
+			delete item;
+#pragma omp atomic
+			threads++;
+
 		}
 	}
 #pragma omp taskwait
