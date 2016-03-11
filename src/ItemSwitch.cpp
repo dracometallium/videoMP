@@ -49,12 +49,12 @@ int ItemSwitch::run()
 			{
 
 				Item **p;
-#pragma omp atomic
-				threads--;
 				if (running && (omp_get_wtime() - item->time) <
 				    maxThreshold) {
 					int t;
 					int deltaThreads;
+#pragma omp atomic
+					threads--;
 					p = slicer->slice(item, NPARTS);
 					deltaThreads = NPARTS - 1;
 #pragma omp atomic
