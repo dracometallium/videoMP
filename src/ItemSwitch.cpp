@@ -40,8 +40,9 @@ int ItemSwitch::run()
 #pragma omp critical (RingStack)
 			item = ringStack->get();
 		}
+		if (item != NULL && running)
 #pragma omp task firstprivate(item)
-		if (item != NULL && running) {
+		{
 			double dtime;
 			int i;
 			for (i = 0; i < numPStaks; i++)
