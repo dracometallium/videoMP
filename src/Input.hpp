@@ -17,10 +17,12 @@ class Input {
 	int numItems;
 	 virtual ~ Input();
 
+ protected:
+	 RingStack * ringStack;
+
  private:
 	volatile int running;
 	double ignore;
-	RingStack *ringStack;
 	//generate should be overridden.
 	virtual Item *generate();
 

@@ -22,7 +22,7 @@
 #include "FastCapture.hpp"
 
 FastCapture::FastCapture(RingStack * rs, std::string _filename, double ignore)
- : Input(rs, ignore)
+:Input(rs, ignore)
 {
 	Frame *nframe;
 	IplImage *tIpl;
@@ -64,17 +64,27 @@ FastCapture::FastCapture(RingStack * rs, std::string _filename, double ignore)
 Item *FastCapture::generate()
 {
 	Item *nframe;
+	bool emptyRS;
 	if (lastTime == 0) {
 		lastTime = omp_get_wtime() - dTime;
 	}
 	lastTime = lastTime + dTime;
-	while (lastTime > omp_get_wtime()) {
+#pragma omp critical (RingStack)
+	{
+		emptyRS = (ringStack->getSize() == 0);
+	}
+	while (lastTime > omp_get_wtime() && !emptyRS) {
 		usleep(250000 * dTime);
+#pragma omp critical (RingStack)
+		{
+			emptyRS = (ringStack->getSize() == 0);
+		}
 	}
 
 	nframe = irs->get();
 
 	if (nframe != NULL) {
+		lastTime = (emptyRS) ? omp_get_wtime() : lastTime;
 		nframe->time = lastTime;
 	}
 
