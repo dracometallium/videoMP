@@ -21,7 +21,8 @@
 
 #include "FastCapture.hpp"
 
-FastCapture::FastCapture(RingStack * rs, std::string _filename, double ignore)
+FastCapture::FastCapture(RingStack * rs, std::string _filename, double ignore,
+			 int FPS)
 :Input(rs, ignore)
 {
 	Frame *nframe;
@@ -29,6 +30,7 @@ FastCapture::FastCapture(RingStack * rs, std::string _filename, double ignore)
 	IplImage *ipl;
 	int i;
 	int loops, nframes;
+	int origFPS, mult;
 	loops = 3;
 	filename = _filename;
 	if (!capture.open(filename)) {
@@ -37,12 +39,20 @@ FastCapture::FastCapture(RingStack * rs, std::string _filename, double ignore)
 	fps = capture.get(CV_CAP_PROP_FPS);	// by default it's initialized to video's FPS.
 	if (fps == 0) {
 		std::cout <<
-		    "Failed to read frame per second (FPS) from video file. By default it is set to 30 fps. "
-		    << std::endl;
+		    "Failed to read frame per second (FPS) from video file."
+		    << "By default it is set to 30 fps. " << std::endl;
 		fps = 30;
 	}
-	nframes = fps * (11 + ignore);
-	irs = new RingStack(nframes * loops);
+	origFPS = fps;
+	if (0 < FPS) {
+		fps = FPS;
+		forceFPS = true;
+	} else {
+		forceFPS = false;
+	}
+	nframes = origFPS * (11 + ignore);
+	mult = (fps + origFPS - 1) / origFPS;
+	irs = new RingStack(nframes * loops * mult);
 	tIpl = new IplImage[nframes];
 	dTime = (1.0 / fps);
 	total_frames = (int)capture.get(CV_CAP_PROP_FRAME_COUNT);
@@ -69,14 +79,16 @@ Item *FastCapture::generate()
 		lastTime = omp_get_wtime() - dTime;
 	}
 	lastTime = lastTime + dTime;
+	if (!forceFPS) {
 #pragma omp critical (RingStack)
-	{
 		emptyRS = (ringStack->getSize() == 0);
+	} else {
+		emptyRS = false;
 	}
 	while (lastTime > omp_get_wtime() && !emptyRS) {
 		usleep(250000 * dTime);
+		if (!forceFPS) {
 #pragma omp critical (RingStack)
-		{
 			emptyRS = (ringStack->getSize() == 0);
 		}
 	}

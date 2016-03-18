@@ -38,14 +38,15 @@
 using namespace cv;
 class FastCapture:public Input {
  public:
-	FastCapture(RingStack * rs, std::string _filename, double ignore);
+	FastCapture(RingStack * rs, std::string _filename, double ignore, int
+		    FPS);
 	virtual Item *generate();
 
  protected:
 	 std::string filename;
 	VideoCapture capture;
 	Mat tframe;
-	RingStack * irs;
+	RingStack *irs;
 	int fps;
 	int total_frames;
 	int frame_height;
@@ -55,6 +56,7 @@ class FastCapture:public Input {
 	void iplimage_from_cvmat(CvMat input, IplImage * output);
 	double lastTime;
 	double dTime;
+	bool forceFPS;
 };
 
 #endif

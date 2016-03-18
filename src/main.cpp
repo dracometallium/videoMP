@@ -33,7 +33,9 @@ int main(int carg, char **varg)
 	int NTHREADS, NPARTS;
 	double maxThreshold;
 	char *file = "../robots.avi";
+	int FPS;
 	maxThreshold = 10.0;
+	FPS = 0;
 
 	if (carg > 2) {
 		NTHREADS = atoi(varg[1]);
@@ -42,7 +44,7 @@ int main(int carg, char **varg)
 			file = varg[3];
 		}
 		if(carg > 4){
-			maxThreshold = atoi(varg[4])/1000.0;
+			FPS = atoi(varg[4]);
 		}
 	} else {
 		NTHREADS = 2;
@@ -187,7 +189,7 @@ int main(int carg, char **varg)
 	color.push_back(c);
 
 	rs = new RingStack(60);
-	input = new FastCapture(rs, file, 3.0);
+	input = new FastCapture(rs, file, 3.0, FPS);
 	sl = new FrameSlicer();
 	is = new ItemSwitch(NTHREADS, NPARTS, sl, rs);
 	ps1 = new PluginStack();
