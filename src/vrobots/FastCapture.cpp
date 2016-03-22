@@ -86,7 +86,7 @@ Item *FastCapture::generate()
 		emptyRS = false;
 	}
 	while (lastTime > omp_get_wtime() && !emptyRS) {
-		usleep(250000 * dTime);
+		usleep(1000 * dTime);
 		if (!forceFPS) {
 #pragma omp critical (RingStack)
 			emptyRS = (ringStack->getSize() == 0);
