@@ -70,6 +70,11 @@ int ItemSwitch::run()
 					     !tooLate; i++) {
 						slicer->resetItem(p[t]);
 						pluginStack[i]->process(p[t]);
+						dt = omp_get_wtime() -
+						    item->time;
+						if (dt > maxThreshold) {
+							tooLate = true;
+						}
 					}
 					slicer->delPart(p[t]);
 #pragma omp atomic
@@ -81,12 +86,14 @@ int ItemSwitch::run()
 				threads--;
 				delete p;
 				dtime = omp_get_wtime() - item->time;
+				if (dtime > maxThreshold) {
+					tooLate = true;
+				}
 				if (ignore) {
 #pragma omp critical (itemIgnore)
 					ignore = Item::ignore;
 				}
-				if (!tooLate && (dtime < maxThreshold) &&
-				    !ignore) {
+				if (!tooLate && !ignore) {
 #pragma omp atomic
 					totalWait = totalWait + dtime;
 					if (maxItemWait < dtime) {
