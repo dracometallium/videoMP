@@ -109,8 +109,6 @@ int ItemSwitch::run()
 #pragma omp atomic
 				threads++;
 			} else {
-#pragma omp atomic
-				threads--;
 				delete item;
 #pragma omp atomic
 				threads++;
