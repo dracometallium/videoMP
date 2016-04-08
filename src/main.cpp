@@ -27,14 +27,14 @@ int main(int carg, char **varg)
 {
 	Input *input;
 	ItemSwitch *is;
-	PluginStack *ps1, *ps2;
+	PluginStack *ps1;
 	RingStack *rs;
 	Slicer *sl;
 	int NTHREADS, NPARTS;
 	double maxThreshold;
 	char *file = "../robots.avi";
 	int FPS;
-	maxThreshold = 10.0;
+	maxThreshold = 50;
 	FPS = 0;
 
 	if (carg > 2) {
@@ -193,7 +193,6 @@ int main(int carg, char **varg)
 	sl = new FrameSlicer();
 	is = new ItemSwitch(NTHREADS, NPARTS, sl, rs);
 	ps1 = new PluginStack();
-	ps2 = new PluginStack();
 
 //      ps1->addPlugin(new PluginCalibration());
 	ps1->addPlugin(new PluginColorConversions());
@@ -202,19 +201,13 @@ int main(int carg, char **varg)
 	ps1->addPlugin(new PluginDetectBalls());
 	ps1->addPlugin(new PluginNetworking(2));
 
-//      ps2->addPlugin(new PluginCalibration());
-	ps2->addPlugin(new PluginColorConversions());
-	ps2->addPlugin(new PluginColorSegmentation(color));
-	ps2->addPlugin(new PluginMorphology());
-	ps2->addPlugin(new PluginFindBlobs());
-	ps2->addPlugin(new PluginFindSecondariesBlobs());
-	ps2->addPlugin(new PluginNetworking(1));
+	ps1->addPlugin(new PluginFindBlobs());
+	ps1->addPlugin(new PluginFindSecondariesBlobs());
+	ps1->addPlugin(new PluginNetworking(1));
 
 	is->addPluginStack(ps1);
-	is->addPluginStack(ps2);
 	is->setThreshold(maxThreshold);
 
-	sleep(2);
 #pragma omp parallel sections num_threads(3)
 	{
 #pragma omp section
@@ -244,7 +237,6 @@ int main(int carg, char **varg)
 	delete input;
 	delete is;
 	delete ps1;
-	delete ps2;
 	delete rs;
 	delete sl;
 
