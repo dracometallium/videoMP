@@ -4,6 +4,8 @@
 #include "Item.hpp"
 #include <cstdlib>
 
+#define RingStack_STACK false
+
 class RingStack {
 
  public:
@@ -12,6 +14,8 @@ class RingStack {
 
 	//Returns NULL if the stack is empty.
 	Item *get();
+	Item *getTop();
+	Item *getBottom();
 
 	//If the stack was full, returns the discarded item, otherwise NULL.
 	Item *put(Item * item);

@@ -25,6 +25,32 @@ Item *RingStack::get()
 {
 	Item *item;
 	item = NULL;
+	if(RingStack_STACK){
+		item = getTop();
+	} else {
+		item = getBottom();
+	}
+	return item;
+}
+
+Item *RingStack::getBottom()
+{
+	Item *item;
+	int nItem;
+	item = NULL;
+	nItem = (top - numItems + SIZE) % SIZE;
+	if (numItems) {
+		item = items[nItem];
+		items[nItem] = NULL;
+		numItems--;
+	}
+	return item;
+}
+
+Item *RingStack::getTop()
+{
+	Item *item;
+	item = NULL;
 	if (numItems) {
 		item = items[top];
 		items[top] = NULL;
