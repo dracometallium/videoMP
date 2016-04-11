@@ -32,18 +32,20 @@ int main(int carg, char **varg)
 	Slicer *sl;
 	int NTHREADS, NPARTS;
 	double maxThreshold;
+	double ignore;
 	char *file = "../robots.avi";
 	int FPS;
 	maxThreshold = 50;
 	FPS = 0;
+	ignore = 3.0;
 
 	if (carg > 2) {
 		NTHREADS = atoi(varg[1]);
 		NPARTS = atoi(varg[2]);
-		if(carg > 3){
+		if (carg > 3) {
 			file = varg[3];
 		}
-		if(carg > 4){
+		if (carg > 4) {
 			FPS = atoi(varg[4]);
 		}
 	} else {
@@ -189,7 +191,7 @@ int main(int carg, char **varg)
 	color.push_back(c);
 
 	rs = new RingStack(60);
-	input = new FastCapture(rs, file, 3.0, FPS);
+	input = new FastCapture(rs, file, ignore, FPS);
 	sl = new FrameSlicer();
 	is = new ItemSwitch(NTHREADS, NPARTS, sl, rs);
 	ps1 = new PluginStack();
@@ -223,7 +225,7 @@ int main(int carg, char **varg)
 #pragma omp section
 		{
 			//run UI
-			sleep(13);
+			sleep(10 + ignore);
 			input->stop();
 			is->stop();
 		}
@@ -232,8 +234,7 @@ int main(int carg, char **varg)
 	std::cout << NTHREADS << " " << NPARTS << " "
 	    << input->numItems << " "
 	    << is->numItems << " "
-	    << is->maxItemWait << " "
-	    << is->totalWait << std::endl;
+	    << is->maxItemWait << " " << is->totalWait << std::endl;
 	delete input;
 	delete is;
 	delete ps1;
