@@ -37,7 +37,7 @@ int main(int carg, char **varg)
 	int FPS;
 	maxThreshold = 50;
 	FPS = 0;
-	ignore = 3.0;
+	ignore = 6.0;
 
 	if (carg > 2) {
 		NTHREADS = atoi(varg[1]);
