@@ -22,8 +22,8 @@ int FrameSlicer::optimalSize(int imgH, int imgW, int parts)
 		if ((parts % i) == 0) {
 			col = parts / i;
 			line = i;
-			nW = imgW / col + BORDER;
-			nH = imgH / line + BORDER;
+			nW = (imgW + col - 1) / col + BORDER;
+			nH = (imgH + line - 1) / line + BORDER;
 			ratio = fabs((nH / nW) - 1);
 			if (ratio < bestRatio) {
 				c = col;
