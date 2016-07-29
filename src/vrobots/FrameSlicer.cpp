@@ -22,8 +22,10 @@ int FrameSlicer::optimalSize(int imgH, int imgW, int parts)
 		if ((parts % i) == 0) {
 			col = parts / i;
 			line = i;
-			nW = (imgW + col - 1) / col + BORDER;
-			nH = (imgH + line - 1) / line + BORDER;
+			nW = (imgW + col - 1 +
+			      ((BORDER / 2) * (col - 1))) / col;
+			nH = (imgH + line - 1 +
+			      ((BORDER / 2) * (line - 1))) / line;
 			ratio = fabs((nH / nW) - 1);
 			if (ratio < bestRatio) {
 				c = col;
@@ -64,8 +66,8 @@ Item **FrameSlicer::slice(Item * item, int numParts)
 	}
 	parts = new Item *[numParts];
 	for (i = 0; i < numParts; i++) {
-		w = imgW / c + BORDER;
-		h = imgH / l + BORDER;
+		w = (imgW + c - 1 + ((BORDER / 2) * (c - 1))) / c;
+		h = (imgH + l - 1 + ((BORDER / 2) * (l - 1))) / l;
 		x = (i % c) * (w - BORDER);
 		y = (i / c) * (h - BORDER);
 
@@ -85,7 +87,7 @@ Item **FrameSlicer::slice(Item * item, int numParts)
 
 int FrameSlicer::delPart(Item * item)
 {
-	Frame * frame;
+	Frame *frame;
 	frame = (Frame *) item;
 	frame->frame->imageData = NULL;
 	frame->frame->imageDataOrigin = NULL;
@@ -95,4 +97,3 @@ int FrameSlicer::delPart(Item * item)
 	delete frame;
 	return 0;
 }
-
