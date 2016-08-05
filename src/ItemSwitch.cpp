@@ -58,7 +58,7 @@ int ItemSwitch::run()
 #pragma omp atomic
 				threads = threads - deltaThreads;
 				for (t = 0; t < NPARTS; t++)
-#pragma omp task firstprivate(t, p) default(shared) if(t != (NPARTS - 1))
+#pragma omp task firstprivate(t) default(shared)
 				{
 					double dt;
 					int i;
