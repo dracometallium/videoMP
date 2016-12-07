@@ -97,7 +97,7 @@ int ItemSwitch::run()
 #pragma omp atomic
 					totalWait = totalWait + dtime;
 					if (maxItemWait < dtime) {
-#pragma omp critical
+#pragma omp critical (maxItemWait)
 						if (maxItemWait < dtime) {
 							maxItemWait = dtime;
 						}

@@ -18,7 +18,7 @@ int PluginCalibration::process(Item * item)
 	IplImage *t;
 	frame = (Frame *) item;
 	if (i == 0)
-#pragma omp critical
+#pragma omp critical (pluginCalibration)
 	{
 		if (i == 0) {
 			intrinsic =

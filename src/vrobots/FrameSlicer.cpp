@@ -58,7 +58,7 @@ Item **FrameSlicer::slice(Item * item, int numParts)
 	imgH = img->height;
 	imgW = img->width;
 	if (oldNumParts != numParts) {
-#pragma omp critical
+#pragma omp critical (calcOptimalSize)
 		if (oldNumParts != numParts) {
 			optimalSize(imgH, imgW, numParts);
 			oldNumParts = numParts;
