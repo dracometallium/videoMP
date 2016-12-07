@@ -33,7 +33,7 @@ int ItemSwitch::run()
 	int threads = NTHREADS;
 	bool ignore = true;
 #pragma omp parallel num_threads(NTHREADS + 1) default(shared)
-#pragma omp single
+#pragma omp master
 	while (running) {
 		item = NULL;
 		if (ringStack->getSize() > 0 && (threads > 0)) {
