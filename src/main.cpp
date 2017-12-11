@@ -39,6 +39,8 @@ int main(int carg, char **varg)
 	FPS = 0;
 	ignore = 6.0;
 
+	setNumThreads(0);
+
 	if (carg > 2) {
 		NTHREADS = atoi(varg[1]);
 		NPARTS = atoi(varg[2]);
