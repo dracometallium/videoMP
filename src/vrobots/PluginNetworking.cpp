@@ -72,6 +72,7 @@ int PluginNetworking::process(Item * item)
 					    2) << ")grad;" << "team marker area"
 			    << (*frame->data)[0]->blue_team->patches[j]->
 			    teamMarker.area << "px;"
+			    << "Slice Number:" << item->num << ";"
 			    /* for general use of markers, enable the next "for" loop below and disable this seccion */
 			    << "secondary marker 0 center(" <<
 			    (*frame->data)[0]->blue_team->patches[j]->
@@ -106,6 +107,7 @@ int PluginNetworking::process(Item * item)
 		qDebug() << QString::number(GetTimeSec(), 'f', 6) << "seconds;"
 		    << "Thread of Processing" << n << ";"
 		    << "#Frame" << (*frame->data)[0]->frameNumber << ";"
+		    << "Slice Number:" << item->num << ";"
 		    << "Object Ball;"
 		    << "pixel(" << (*frame->data)[0]->ball->center.x << ","
 		    << (*frame->data)[0]->ball->center.y << ");"

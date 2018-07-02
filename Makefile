@@ -2,7 +2,7 @@ NAME=videoMP
 
 CXX=g++
 
-DEBUG=-O3
+DEBUG=-O3 -mtune=native
 LFLAGS=-fopenmp
 CFLAGS=-Wall -fopenmp -pipe
 OPENCVPATH=-I/usr/include/opencv2 -I/usr/include/opencv

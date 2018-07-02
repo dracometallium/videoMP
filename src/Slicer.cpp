@@ -6,6 +6,7 @@ Item **Slicer::slice(Item * item, int numParts)
 	parts = new Item *[numParts];
 	for (i = 0; i < numParts; i++) {
 		parts[i] = new Item;
+		parts[i]->num = i;
 	}
 	return parts;
 }

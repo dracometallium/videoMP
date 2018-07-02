@@ -7,6 +7,7 @@ class Item {
 	virtual ~ Item();
 	double time;
 	static bool ignore;
+	int num;
 };
 
 #endif
